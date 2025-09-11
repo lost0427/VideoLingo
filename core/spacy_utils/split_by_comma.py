@@ -5,6 +5,7 @@ import os,sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from load_nlp_model import init_nlp
 from rich import print
+import streamlit as st
 
 def is_valid_phrase(phrase):
     # 🔍 Check for subject and verb
@@ -52,7 +53,11 @@ def split_by_comma(text, nlp):
 
 def split_by_comma_main(nlp):
 
-    with open("output/log/sentence_by_mark.txt", "r", encoding="utf-8") as input_file:
+    username = st.session_state.get('username')
+    SENTENCES_BY_MARK_PATH = os.path.join("users", username, "output", "log", "sentence_by_mark.txt")
+    SENTENCES_BY_COMMA_PATH = os.path.join("users", username, "output", "log", "sentence_by_comma.txt")
+
+    with open(SENTENCES_BY_MARK_PATH, "r", encoding="utf-8") as input_file:
         sentences = input_file.readlines()
 
     all_split_sentences = []
@@ -60,12 +65,12 @@ def split_by_comma_main(nlp):
         split_sentences = split_by_comma(sentence.strip(), nlp)
         all_split_sentences.extend(split_sentences)
 
-    with open("output/log/sentence_by_comma.txt", "w", encoding="utf-8") as output_file:
+    with open(SENTENCES_BY_COMMA_PATH, "w", encoding="utf-8") as output_file:
         for sentence in all_split_sentences:
             output_file.write(sentence + "\n")
     
     # delete the original file
-    os.remove("output/log/sentence_by_mark.txt")
+    os.remove(SENTENCES_BY_MARK_PATH)
     
     print("[green]💾 Sentences split by commas saved to →  `sentences_by_comma.txt`[/green]")
 

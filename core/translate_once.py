@@ -22,7 +22,7 @@ def valid_translate_result(result: dict, required_keys: list, required_sub_keys:
 
     return {"status": "success", "message": "Translation completed"}
 
-def translate_lines(lines, previous_content_prompt, after_cotent_prompt, things_to_note_prompt, summary_prompt, index = 0):
+def translate_lines(lines, previous_content_prompt, after_cotent_prompt, things_to_note_prompt, summary_prompt, username, index = 0):
     shared_prompt = generate_shared_prompt(previous_content_prompt, after_cotent_prompt, summary_prompt, things_to_note_prompt)
 
     # Retry translation if the length of the original text and the translated text are not the same, or if the specified key is missing
@@ -33,9 +33,9 @@ def translate_lines(lines, previous_content_prompt, after_cotent_prompt, things_
             return valid_translate_result(response_data, ['1'], ['free'])
         for retry in range(3):
             if step_name == 'faithfulness':
-                result = ask_gpt(prompt+retry* " ", response_json=True, valid_def=valid_faith, log_title=f'translate_{step_name}')
+                result = ask_gpt(prompt+retry* " ", response_json=True, valid_def=valid_faith, log_title=f'translate_{step_name}', username=username)
             elif step_name == 'expressiveness':
-                result = ask_gpt(prompt+retry* " ", response_json=True, valid_def=valid_express, log_title=f'translate_{step_name}')
+                result = ask_gpt(prompt+retry* " ", response_json=True, valid_def=valid_express, log_title=f'translate_{step_name}', username=username)
             if len(lines.split('\n')) == len(result):
                 return result
             if retry != 2:
@@ -43,14 +43,14 @@ def translate_lines(lines, previous_content_prompt, after_cotent_prompt, things_
         raise ValueError(f'[red]❌ {step_name.capitalize()} translation of block {index} failed after 3 retries. Please check `output/gpt_log/error.json` for more details.[/red]')
 
     ## Step 1: Faithful to the Original Text
-    prompt1 = get_prompt_faithfulness(lines, shared_prompt)
+    prompt1 = get_prompt_faithfulness(lines, shared_prompt, username=username)
     faith_result = retry_translation(prompt1, 'faithfulness')
 
     for i in faith_result:
         faith_result[i]["direct"] = faith_result[i]["direct"].replace('\n', ' ')
 
     # If reflect_translate is False or not set, use faithful translation directly
-    reflect_translate = load_key('reflect_translate')
+    reflect_translate = load_key('reflect_translate', username=username)
     if not reflect_translate:
         # If reflect_translate is False or not set, use faithful translation directly
         translate_result = "\n".join([faith_result[i]["direct"].strip() for i in faith_result])
@@ -67,7 +67,7 @@ def translate_lines(lines, previous_content_prompt, after_cotent_prompt, things_
         return translate_result, lines
 
     ## Step 2: Express Smoothly  
-    prompt2 = get_prompt_expressiveness(faith_result, lines, shared_prompt)
+    prompt2 = get_prompt_expressiveness(faith_result, lines, shared_prompt, username)
     express_result = retry_translation(prompt2, 'expressiveness')
 
     table = Table(title="Translation Results", show_header=False, box=box.ROUNDED)

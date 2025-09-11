@@ -2,6 +2,7 @@ import json
 import sys,os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.config_utils import load_key
+import streamlit as st
 
 DISPLAY_LANGUAGES = {
     "🇬🇧 English": "en",
@@ -20,8 +21,9 @@ def load_translations(language="en"):
 
 # Function to fetch the translation
 def translate(key):
+    username = st.session_state.get('username')
     try:
-        display_language = load_key("display_language")
+        display_language = load_key("display_language", username=username)
         translations = load_translations(display_language)
         translation = translations.get(key)
         if translation is None:

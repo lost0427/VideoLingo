@@ -10,11 +10,8 @@ from typing import Optional
 from demucs.api import Separator
 from demucs.apply import BagOfModels
 import gc
+import streamlit as st
 
-AUDIO_DIR = "output/audio"
-RAW_AUDIO_FILE = os.path.join(AUDIO_DIR, "raw.mp3")
-BACKGROUND_AUDIO_FILE = os.path.join(AUDIO_DIR, "background.mp3")
-VOCAL_AUDIO_FILE = os.path.join(AUDIO_DIR, "vocal.mp3")
 
 class PreloadedSeparator(Separator):
     def __init__(self, model: BagOfModels, shifts: int = 1, overlap: float = 0.25,
@@ -25,6 +22,13 @@ class PreloadedSeparator(Separator):
                             segment=segment, jobs=jobs, progress=True, callback=None, callback_arg=None)
 
 def demucs_main():
+
+    username = st.session_state.get('username')
+    AUDIO_DIR = os.path.join("users", username, "output", "audio")
+    RAW_AUDIO_FILE = os.path.join(AUDIO_DIR, "raw.mp3")
+    BACKGROUND_AUDIO_FILE = os.path.join(AUDIO_DIR, "background.mp3")
+    VOCAL_AUDIO_FILE = os.path.join(AUDIO_DIR, "vocal.mp3")
+
     if os.path.exists(VOCAL_AUDIO_FILE) and os.path.exists(BACKGROUND_AUDIO_FILE):
         rprint(f"[yellow]⚠️ {VOCAL_AUDIO_FILE} and {BACKGROUND_AUDIO_FILE} already exist, skip Demucs processing.[/yellow]")
         return

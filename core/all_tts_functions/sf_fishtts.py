@@ -214,7 +214,9 @@ def siliconflow_fish_tts_for_videolingo(text, save_as, number, task_df):
     if MODE == "preset":
         return siliconflow_fish_tts(text, save_as, mode="preset")
     elif MODE == "custom":
-        video_file = find_video_files()
+        import streamlit as st
+        username = st.session_state.get('username')
+        video_file = find_video_files(username=username)
         custom_name = hashlib.md5(video_file.encode()).hexdigest()[:8]
         rprint(f"[yellow]Using custom name: {custom_name}")
         log_name = load_key("sf_fish_tts.custom_name")
@@ -227,10 +229,10 @@ def siliconflow_fish_tts_for_videolingo(text, save_as, number, task_df):
                 return siliconflow_fish_tts(text, save_as, mode="preset")
                 
             voice_id = create_custom_voice(ref_audio, ref_text, custom_name)
-            update_key("sf_fish_tts.voice_id", voice_id)
-            update_key("sf_fish_tts.custom_name", custom_name)
+            update_key("sf_fish_tts.voice_id", voice_id, username=username)
+            update_key("sf_fish_tts.custom_name", custom_name, username=username)
         else:
-            voice_id = load_key("sf_fish_tts.voice_id")
+            voice_id = load_key("sf_fish_tts.voice_id", username=username)
         return siliconflow_fish_tts(text=text, save_path=save_as, mode="custom", voice_id=voice_id)
     elif MODE == "dynamic":
         ref_audio_path = f"{AUDIO_REFERS_DIR}/{number}.wav"

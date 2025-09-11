@@ -8,10 +8,18 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CONFIG_PATH = 'config.yaml'
 config_lock = threading.Lock()
 
+def get_user_config_path(username: str = None) -> str:
+    if username:
+        user_config_path = os.path.join('users', username, 'config.yaml')
+        if os.path.exists(user_config_path):
+            return user_config_path
+    return CONFIG_PATH
+
 yaml = YAML()
 yaml.preserve_quotes = True
 
-def load_key(key: str) -> Any:
+def load_key(key: str, username: str = None) -> Any:
+    CONFIG_PATH = get_user_config_path(username)
     with config_lock:
         with open(CONFIG_PATH, 'r', encoding='utf-8') as file:
             data = yaml.load(file)
@@ -25,9 +33,10 @@ def load_key(key: str) -> Any:
             raise KeyError(f"Key '{k}' not found in configuration")
     return value
 
-def update_key(key: str, new_value: Any) -> bool:
+def update_key(key: str, new_value: Any, username: str = None) -> bool:
+    config_path = get_user_config_path(username)
     with config_lock:
-        with open(CONFIG_PATH, 'r', encoding='utf-8') as file:
+        with open(config_path, 'r', encoding='utf-8') as file:
             data = yaml.load(file)
 
         keys = key.split('.')
@@ -40,7 +49,7 @@ def update_key(key: str, new_value: Any) -> bool:
 
         if isinstance(current, dict) and keys[-1] in current:
             current[keys[-1]] = new_value
-            with open(CONFIG_PATH, 'w', encoding='utf-8') as file:
+            with open(config_path, 'w', encoding='utf-8') as file:
                 yaml.dump(data, file)
             return True
         else:

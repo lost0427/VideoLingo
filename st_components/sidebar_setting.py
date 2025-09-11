@@ -7,19 +7,21 @@ from translations.translations import translate as t
 from translations.translations import DISPLAY_LANGUAGES
 
 def config_input(label, key, help=None):
+    username = st.session_state.get('username')
     """Generic config input handler"""
-    val = st.text_input(label, value=load_key(key), help=help)
-    if val != load_key(key):
-        update_key(key, val)
+    val = st.text_input(label, value=load_key(key, username=username), help=help)
+    if val != load_key(key, username=username):
+        update_key(key, val, username=username)
     return val
 
 def page_setting():
+    username = st.session_state.get('username')
 
     display_language = st.selectbox("Display Language 🌐", 
                                   options=list(DISPLAY_LANGUAGES.keys()),
-                                  index=list(DISPLAY_LANGUAGES.values()).index(load_key("display_language")))
-    if DISPLAY_LANGUAGES[display_language] != load_key("display_language"):
-        update_key("display_language", DISPLAY_LANGUAGES[display_language])
+                                  index=list(DISPLAY_LANGUAGES.values()).index(load_key("display_language", username=username)))
+    if DISPLAY_LANGUAGES[display_language] != load_key("display_language", username=username):
+        update_key("display_language", DISPLAY_LANGUAGES[display_language], username=username)
         st.rerun()
 
     with st.expander(t("LLM Configuration"), expanded=True):
@@ -50,40 +52,40 @@ def page_setting():
             lang = st.selectbox(
                 t("Recog Lang"),
                 options=list(langs.keys()),
-                index=list(langs.values()).index(load_key("whisper.language"))
+                index=list(langs.values()).index(load_key("whisper.language", username=username))
             )
-            if langs[lang] != load_key("whisper.language"):
-                update_key("whisper.language", langs[lang])
+            if langs[lang] != load_key("whisper.language", username=username):
+                update_key("whisper.language", langs[lang], username=username)
                 st.rerun()
 
         # add runtime selection in v2.2.0
-        runtime = st.selectbox(t("WhisperX Runtime"), options=["local", "cloud"], index=["local", "cloud"].index(load_key("whisper.runtime")), help=t("Local runtime requires >8GB GPU, cloud runtime requires 302ai API key"))
-        if runtime != load_key("whisper.runtime"):
-            update_key("whisper.runtime", runtime)
+        runtime = st.selectbox(t("WhisperX Runtime"), options=["local", "cloud"], index=["local", "cloud"].index(load_key("whisper.runtime", username=username)), help=t("Local runtime requires >8GB GPU, cloud runtime requires 302ai API key"))
+        if runtime != load_key("whisper.runtime", username=username):
+            update_key("whisper.runtime", runtime, username=username)
             st.rerun()
         if runtime == "cloud":
             config_input(t("WhisperX 302ai API"), "whisper.whisperX_302_api_key")
 
         with c2:
-            target_language = st.text_input(t("Target Lang"), value=load_key("target_language"), help=t("Input any language in natural language, as long as llm can understand"))
-            if target_language != load_key("target_language"):
-                update_key("target_language", target_language)
+            target_language = st.text_input(t("Target Lang"), value=load_key("target_language", username=username), help=t("Input any language in natural language, as long as llm can understand"))
+            if target_language != load_key("target_language", username=username):
+                update_key("target_language", target_language, username=username)
                 st.rerun()
 
-        demucs = st.toggle(t("Vocal separation enhance"), value=load_key("demucs"), help=t("Recommended for videos with loud background noise, but will increase processing time"))
-        if demucs != load_key("demucs"):
-            update_key("demucs", demucs)
+        demucs = st.toggle(t("Vocal separation enhance"), value=load_key("demucs", username=username), help=t("Recommended for videos with loud background noise, but will increase processing time"))
+        if demucs != load_key("demucs", username=username):
+            update_key("demucs", demucs, username=username)
             st.rerun()
         
-        burn_subtitles = st.toggle(t("Burn-in Subtitles"), value=load_key("burn_subtitles"), help=t("Whether to burn subtitles into the video, will increase processing time"))
-        if burn_subtitles != load_key("burn_subtitles"):
-            update_key("burn_subtitles", burn_subtitles)
+        burn_subtitles = st.toggle(t("Burn-in Subtitles"), value=load_key("burn_subtitles", username=username), help=t("Whether to burn subtitles into the video, will increase processing time"))
+        if burn_subtitles != load_key("burn_subtitles", username=username):
+            update_key("burn_subtitles", burn_subtitles, username=username)
             st.rerun()
     with st.expander(t("Dubbing Settings"), expanded=True):
         tts_methods = ["azure_tts", "openai_tts", "fish_tts", "sf_fish_tts", "edge_tts", "gpt_sovits", "custom_tts", "sf_cosyvoice2"]
-        select_tts = st.selectbox(t("TTS Method"), options=tts_methods, index=tts_methods.index(load_key("tts_method")))
-        if select_tts != load_key("tts_method"):
-            update_key("tts_method", select_tts)
+        select_tts = st.selectbox(t("TTS Method"), options=tts_methods, index=tts_methods.index(load_key("tts_method", username=username)))
+        if select_tts != load_key("tts_method", username=username):
+            update_key("tts_method", select_tts, username=username)
             st.rerun()
 
         # sub settings for each tts method
@@ -100,10 +102,10 @@ def page_setting():
                 t("Mode Selection"),
                 options=list(mode_options.keys()),
                 format_func=lambda x: mode_options[x],
-                index=list(mode_options.keys()).index(load_key("sf_fish_tts.mode")) if load_key("sf_fish_tts.mode") in mode_options.keys() else 0
+                index=list(mode_options.keys()).index(load_key("sf_fish_tts.mode", username=username)) if load_key("sf_fish_tts.mode", username=username) in mode_options.keys() else 0
             )
-            if selected_mode != load_key("sf_fish_tts.mode"):
-                update_key("sf_fish_tts.mode", selected_mode)
+            if selected_mode != load_key("sf_fish_tts.mode", username=username):
+                update_key("sf_fish_tts.mode", selected_mode, username=username)
                 st.rerun()
             if selected_mode == "preset":
                 config_input("Voice", "sf_fish_tts.voice")
@@ -114,9 +116,9 @@ def page_setting():
 
         elif select_tts == "fish_tts":
             config_input("302ai API", "fish_tts.api_key")
-            fish_tts_character = st.selectbox(t("Fish TTS Character"), options=list(load_key("fish_tts.character_id_dict").keys()), index=list(load_key("fish_tts.character_id_dict").keys()).index(load_key("fish_tts.character")))
-            if fish_tts_character != load_key("fish_tts.character"):
-                update_key("fish_tts.character", fish_tts_character)
+            fish_tts_character = st.selectbox(t("Fish TTS Character"), options=list(load_key("fish_tts.character_id_dict", username=username).keys()), index=list(load_key("fish_tts.character_id_dict", username=username).keys()).index(load_key("fish_tts.character", username=username)))
+            if fish_tts_character != load_key("fish_tts.character", username=username):
+                update_key("fish_tts.character", fish_tts_character, username=username)
                 st.rerun()
 
         elif select_tts == "azure_tts":
@@ -132,11 +134,11 @@ def page_setting():
                 t("Refer Mode"),
                 options=list(refer_mode_options.keys()),
                 format_func=lambda x: refer_mode_options[x],
-                index=list(refer_mode_options.keys()).index(load_key("gpt_sovits.refer_mode")),
+                index=list(refer_mode_options.keys()).index(load_key("gpt_sovits.refer_mode", username=username)),
                 help=t("Configure reference audio mode for GPT-SoVITS")
             )
-            if selected_refer_mode != load_key("gpt_sovits.refer_mode"):
-                update_key("gpt_sovits.refer_mode", selected_refer_mode)
+            if selected_refer_mode != load_key("gpt_sovits.refer_mode", username=username):
+                update_key("gpt_sovits.refer_mode", selected_refer_mode, username=username)
                 st.rerun()
                 
         elif select_tts == "edge_tts":

@@ -8,13 +8,14 @@ import re
 import subprocess
 from translations.translations import translate as t
 
-OUTPUT_DIR = "output"
 
 def download_video_section():
     st.header(t("a. Download or Upload Video"))
     with st.container(border=True):
+        username = st.session_state.get('username')
+        OUTPUT_DIR = os.path.join("users", username, "output")
         try:
-            video_file = find_video_files()
+            video_file = find_video_files(username=username)
             st.video(video_file)
             if st.button(t("Delete and Reselect"), key="delete_video_button"):
                 os.remove(video_file)
@@ -41,7 +42,7 @@ def download_video_section():
             if st.button(t("Download Video"), key="download_button", use_container_width=True):
                 if url:
                     with st.spinner("Downloading video..."):
-                        download_video_ytdlp(url, resolution=res)
+                        download_video_ytdlp(url, resolution=res, username=username)
                     st.rerun()
 
             uploaded_file = st.file_uploader(t("Or upload video"), type=load_key("allowed_video_formats") + load_key("allowed_audio_formats"))
@@ -64,6 +65,8 @@ def download_video_section():
                 return False
 
 def convert_audio_to_video(audio_file: str) -> str:
+    username = st.session_state.get('username')
+    OUTPUT_DIR = os.path.join("users", username, "output")
     output_video = os.path.join(OUTPUT_DIR, 'black_screen.mp4')
     if not os.path.exists(output_video):
         print(f"🎵➡️🎬 Converting audio to video with FFmpeg ......")

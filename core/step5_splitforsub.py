@@ -11,13 +11,10 @@ from core.config_utils import load_key, get_joiner
 from rich.panel import Panel
 from rich.console import Console
 from rich.table import Table
+import streamlit as st
 
 console = Console()
 
-# Constants
-INPUT_FILE = "output/log/translation_results.xlsx"
-OUTPUT_SPLIT_FILE = "output/log/translation_results_for_subtitles.xlsx"
-OUTPUT_REMERGED_FILE = "output/log/translation_results_remerged.xlsx"
 
 # ! You can modify your own weights here
 # Chinese and Japanese 2.5 characters, Korean 2 characters, Thai 1.5 characters, full-width symbols 2 characters, other English-based and half-width symbols 1 character
@@ -39,7 +36,8 @@ def calc_len(text: str) -> float:
     return sum(char_weight(char) for char in text)
 
 def align_subs(src_sub: str, tr_sub: str, src_part: str) -> Tuple[List[str], List[str], str]:
-    align_prompt = get_align_prompt(src_sub, tr_sub, src_part)
+    username = st.session_state.get('username')
+    align_prompt = get_align_prompt(src_sub, tr_sub, src_part, username)
     
     def valid_align(response_data):
         if 'align' not in response_data:
@@ -48,14 +46,14 @@ def align_subs(src_sub: str, tr_sub: str, src_part: str) -> Tuple[List[str], Lis
             return {"status": "error", "message": "Align does not contain more than 1 part as expected!"}
         return {"status": "success", "message": "Align completed"}
 
-    parsed = ask_gpt(align_prompt, response_json=True, valid_def=valid_align, log_title='align_subs')
+    parsed = ask_gpt(align_prompt, username=username, response_json=True, valid_def=valid_align, log_title='align_subs')
     
     align_data = parsed['align']
     src_parts = src_part.split('\n')
     tr_parts = [item[f'target_part_{i+1}'].strip() for i, item in enumerate(align_data)]
     
-    whisper_language = load_key("whisper.language")
-    language = load_key("whisper.detected_language") if whisper_language == 'auto' else whisper_language
+    whisper_language = load_key("whisper.language", username=username)
+    language = load_key("whisper.detected_language", username=username) if whisper_language == 'auto' else whisper_language
     joiner = get_joiner(language)
     tr_remerged = joiner.join(tr_parts)
     
@@ -70,7 +68,8 @@ def align_subs(src_sub: str, tr_sub: str, src_part: str) -> Tuple[List[str], Lis
     return src_parts, tr_parts, tr_remerged
 
 def split_align_subs(src_lines: List[str], tr_lines: List[str]) -> Tuple[List[str], List[str], List[str]]:
-    subtitle_set = load_key("subtitle")
+    username = st.session_state.get('username')
+    subtitle_set = load_key("subtitle", username=username)
     MAX_SUB_LENGTH = subtitle_set["max_length"]
     TARGET_SUB_MULTIPLIER = subtitle_set["target_multiplier"]
     remerged_tr_lines = tr_lines.copy()
@@ -94,7 +93,7 @@ def split_align_subs(src_lines: List[str], tr_lines: List[str]) -> Tuple[List[st
         tr_lines[i] = tr_parts
         remerged_tr_lines[i] = tr_remerged
     
-    with concurrent.futures.ThreadPoolExecutor(max_workers=load_key("max_workers")) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=load_key("max_workers", username=username)) as executor:
         executor.map(process, to_split)
     
     # Flatten `src_lines` and `tr_lines`
@@ -105,12 +104,14 @@ def split_align_subs(src_lines: List[str], tr_lines: List[str]) -> Tuple[List[st
 
 def split_for_sub_main():
     console.print("[bold green]🚀 Start splitting subtitles...[/bold green]")
+    username = st.session_state.get('username')
+    INPUT_FILE = os.path.join("users", username, "output", "log", "translation_results.xlsx")
     
     df = pd.read_excel(INPUT_FILE)
     src = df['Source'].tolist()
     trans = df['Translation'].tolist()
     
-    subtitle_set = load_key("subtitle")
+    subtitle_set = load_key("subtitle", username=username)
     MAX_SUB_LENGTH = subtitle_set["max_length"]
     TARGET_SUB_MULTIPLIER = subtitle_set["target_multiplier"]
     
@@ -127,6 +128,8 @@ def split_for_sub_main():
         src = split_src
         trans = split_trans
 
+    OUTPUT_SPLIT_FILE = os.path.join("users", username, "output", "log", "translation_results_for_subtitles.xlsx")
+    OUTPUT_REMERGED_FILE = os.path.join("users", username, "output", "log", "translation_results_remerged.xlsx")
     pd.DataFrame({'Source': split_src, 'Translation': split_trans}).to_excel(OUTPUT_SPLIT_FILE, index=False)
     pd.DataFrame({'Source': src, 'Translation': remerged}).to_excel(OUTPUT_REMERGED_FILE, index=False)
 

@@ -4,10 +4,8 @@ from typing import Dict, List, Tuple
 from rich import print
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.config_utils import update_key
+import streamlit as st
 
-AUDIO_DIR = "output/audio"
-RAW_AUDIO_FILE = "output/audio/raw.mp3"
-CLEANED_CHUNKS_EXCEL_PATH = "output/log/cleaned_chunks.xlsx"
 
 def compress_audio(input_file: str, output_file: str):
     """将输入音频文件压缩为低质量音频文件，用于转录"""
@@ -23,6 +21,10 @@ def compress_audio(input_file: str, output_file: str):
     return output_file
 
 def convert_video_to_audio(video_file: str):
+    username = st.session_state.get('username')
+    AUDIO_DIR = os.path.join("users", username, "output", "audio")
+    RAW_AUDIO_FILE = os.path.join("users", username, "output", "audio", "raw.mp3")
+
     os.makedirs(AUDIO_DIR, exist_ok=True)
     if not os.path.exists(RAW_AUDIO_FILE):
         print(f"🎬➡️🎵 Converting to high quality audio with FFmpeg ......")
@@ -140,7 +142,11 @@ def process_transcription(result: Dict) -> pd.DataFrame:
     return pd.DataFrame(all_words)
 
 def save_results(df: pd.DataFrame):
-    os.makedirs('output/log', exist_ok=True)
+    username = st.session_state.get('username')
+    CLEANED_CHUNKS_EXCEL_PATH = os.path.join("users", username, "output", "log", "cleaned_chunks.xlsx")
+    MAKEDIRS = os.path.join("users", username, "output", "log")
+
+    os.makedirs(MAKEDIRS, exist_ok=True)
 
     # Remove rows where 'text' is empty
     initial_rows = len(df)

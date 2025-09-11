@@ -12,17 +12,16 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from difflib import SequenceMatcher
+import streamlit as st
 
 console = Console()
 
-SENTENCE_SPLIT_FILE = "output/log/sentence_splitbymeaning.txt"
-TRANSLATION_RESULTS_FILE = "output/log/translation_results.xlsx"
-TERMINOLOGY_FILE = "output/log/terminology.json"
-CLEANED_CHUNKS_FILE = "output/log/cleaned_chunks.xlsx"
 
 # Function to split text into chunks
 def split_chunks_by_chars(chunk_size=400, max_i=8): 
     """Split text into chunks based on character count, return a list of multi-line text chunks"""
+    username = st.session_state.get('username')
+    SENTENCE_SPLIT_FILE = os.path.join("users", username, "output", "log", "sentence_splitbymeaning.txt")
     with open(SENTENCE_SPLIT_FILE, "r", encoding="utf-8") as file:
         sentences = file.read().strip().split('\n')
 
@@ -47,11 +46,11 @@ def get_after_content(chunks, chunk_index):
     return None if chunk_index == len(chunks) - 1 else chunks[chunk_index + 1].split('\n')[:2] # Get first 2 lines
 
 # 🔍 Translate a single chunk
-def translate_chunk(chunk, chunks, theme_prompt, i):
-    things_to_note_prompt = search_things_to_note_in_prompt(chunk)
+def translate_chunk(chunk, chunks, theme_prompt, i, username):
+    things_to_note_prompt = search_things_to_note_in_prompt(chunk, username)
     previous_content_prompt = get_previous_content(chunks, i)
     after_content_prompt = get_after_content(chunks, i)
-    translation, english_result = translate_lines(chunk, previous_content_prompt, after_content_prompt, things_to_note_prompt, theme_prompt, i)
+    translation, english_result = translate_lines(chunk, previous_content_prompt, after_content_prompt, things_to_note_prompt, theme_prompt, username, i)
     return i, english_result, translation
 
 # Add similarity calculation function
@@ -61,12 +60,15 @@ def similar(a, b):
 # 🚀 Main function to translate all chunks
 def translate_all():
     # Check if the file exists
+    username = st.session_state.get('username')
+    TRANSLATION_RESULTS_FILE = os.path.join("users", username, "output", "log", "translation_results.xlsx")
     if os.path.exists(TRANSLATION_RESULTS_FILE):
         console.print(Panel("🚨 File `translation_results.xlsx` already exists, skipping TRANSLATE ALL.", title="Warning", border_style="yellow"))
         return
     
     console.print("[bold green]Start Translating All...[/bold green]")
     chunks = split_chunks_by_chars(chunk_size=500, max_i=10)
+    TERMINOLOGY_FILE = os.path.join("users", username, "output", "log", "terminology.json")
     with open(TERMINOLOGY_FILE, 'r', encoding='utf-8') as file:
         theme_prompt = json.load(file).get('theme')
 
@@ -77,10 +79,10 @@ def translate_all():
         transient=True,
     ) as progress:
         task = progress.add_task("[cyan]Translating chunks...", total=len(chunks))
-        with concurrent.futures.ThreadPoolExecutor(max_workers=load_key("max_workers")) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=load_key("max_workers", username=username)) as executor:
             futures = []
             for i, chunk in enumerate(chunks):
-                future = executor.submit(translate_chunk, chunk, chunks, theme_prompt, i)
+                future = executor.submit(translate_chunk, chunk, chunks, theme_prompt, i, username)
                 futures.append(future)
 
             results = []
@@ -112,6 +114,7 @@ def translate_all():
         trans_text.extend(best_match[0][2].split('\n'))
     
     # Trim long translation text
+    CLEANED_CHUNKS_FILE = os.path.join("users", username, "output", "log", "cleaned_chunks.xlsx")
     df_text = pd.read_excel(CLEANED_CHUNKS_FILE)
     df_text['text'] = df_text['text'].str.strip('"').str.strip()
     df_translate = pd.DataFrame({'Source': src_text, 'Translation': trans_text})
@@ -119,7 +122,7 @@ def translate_all():
     df_time = align_timestamp(df_text, df_translate, subtitle_output_configs, output_dir=None, for_display=False)
     console.print(df_time)
     # apply check_len_then_trim to df_time['Translation'], only when duration > MIN_TRIM_DURATION.
-    df_time['Translation'] = df_time.apply(lambda x: check_len_then_trim(x['Translation'], x['duration']) if x['duration'] > load_key("min_trim_duration") else x['Translation'], axis=1)
+    df_time['Translation'] = df_time.apply(lambda x: check_len_then_trim(x['Translation'], x['duration']) if x['duration'] > load_key("min_trim_duration", username=username) else x['Translation'], axis=1)
     console.print(df_time)
     
     df_time.to_excel(TRANSLATION_RESULTS_FILE, index=False)

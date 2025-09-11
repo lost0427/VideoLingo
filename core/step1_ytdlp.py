@@ -13,7 +13,9 @@ def sanitize_filename(filename):
     # Use default name if filename is empty
     return filename if filename else 'video'
 
-def download_video_ytdlp(url, save_path='output', resolution='1080', cutoff_time=None):
+def download_video_ytdlp(url, save_path='output', resolution='1080', cutoff_time=None, username=None):
+    if username:
+        save_path = os.path.join('users', username, 'output')
     allowed_resolutions = ['360', '1080', 'best']
     if resolution not in allowed_resolutions:
         resolution = '360'
@@ -78,12 +80,18 @@ def download_video_ytdlp(url, save_path='output', resolution='1080', cutoff_time
         else:
             print(f"Video duration ({duration:.2f}s) is not longer than cutoff time. No need to cut.")
 
-def find_video_files(save_path='output'):
-    video_files = [file for file in glob.glob(save_path + "/*") if os.path.splitext(file)[1][1:].lower() in load_key("allowed_video_formats")]
+def find_video_files(save_path='output', username=None):
+    if username:
+        save_path = os.path.join('users', username, 'output')
+    video_files = [file for file in glob.glob(save_path + "/*") if os.path.splitext(file)[1][1:].lower() in load_key("allowed_video_formats", username=username)]
     # change \\ to /, this happen on windows
     if sys.platform.startswith('win'):
         video_files = [file.replace("\\", "/") for file in video_files]
-    video_files = [file for file in video_files if not file.startswith("output/output")]
+    video_files = [
+        file for file in video_files 
+        if not file.startswith("output/output") 
+        and not file.endswith("/output_sub.mp4")
+    ]
     # if num != 1, raise ValueError
     if len(video_files) != 1:
         raise ValueError(f"Number of videos found is not unique. Please check. Number of videos found: {len(video_files)}")
@@ -94,5 +102,5 @@ if __name__ == '__main__':
     url = input('Please enter the URL of the video you want to download: ')
     resolution = input('Please enter the desired resolution (360/1080, default 1080): ')
     resolution = int(resolution) if resolution.isdigit() else 1080
-    download_video_ytdlp(url, resolution=resolution)
-    print(f"🎥 Video has been downloaded to {find_video_files()}")
+    username = input('Please enter the username (optional): ') or None
+    download_video_ytdlp(url, resolution=resolution, username=username)

@@ -102,5 +102,6 @@
     "Installing requirements using `pip install -r requirements.txt`": "Instalando dependencias usando `pip install -r requirements.txt`",
     "Detected NVIDIA GPU(s)": "GPU(s) NVIDIA detectada(s)",
     "No NVIDIA GPU detected": "No se detectó GPU NVIDIA",
-    "No NVIDIA GPU detected or NVIDIA drivers not properly installed": "No se detectó GPU NVIDIA o los controladores NVIDIA no están instalados correctamente"
+    "No NVIDIA GPU detected or NVIDIA drivers not properly installed": "No se detectó GPU NVIDIA o los controladores NVIDIA no están instalados correctamente",
+    "Welcome": "Bienvenido"
 }

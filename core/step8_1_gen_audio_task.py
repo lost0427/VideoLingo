@@ -10,16 +10,17 @@ from rich.panel import Panel
 from rich.console import Console
 from core.config_utils import load_key  
 from core.all_tts_functions.estimate_duration import init_estimator, estimate_duration
+import streamlit as st
 
 console = Console()
-speed_factor = load_key("speed_factor")
 
-TRANS_SUBS_FOR_AUDIO_FILE = 'output/audio/trans_subs_for_audio.srt'
-SRC_SUBS_FOR_AUDIO_FILE = 'output/audio/src_subs_for_audio.srt'
+
 SOVITS_TASKS_FILE = 'output/audio/tts_tasks.xlsx'
 ESTIMATOR = None
 
 def check_len_then_trim(text, duration):
+    username = st.session_state.get('username')
+    speed_factor = load_key("speed_factor", username=username)
     global ESTIMATOR
     if ESTIMATOR is None:
         ESTIMATOR = init_estimator()
@@ -56,6 +57,10 @@ def time_diff_seconds(t1, t2, base_date):
 def process_srt():
     """Process srt file, generate audio tasks"""
     
+    username = st.session_state.get('username')
+    TRANS_SUBS_FOR_AUDIO_FILE = os.path.join("users", username, "output", "audio", "trans_subs_for_audio.srt")
+    SRC_SUBS_FOR_AUDIO_FILE = os.path.join("users", username, "output", "audio", "src_subs_for_audio.srt")
+
     with open(TRANS_SUBS_FOR_AUDIO_FILE, 'r', encoding='utf-8') as file:
         content = file.read()
     

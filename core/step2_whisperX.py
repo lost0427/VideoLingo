@@ -5,16 +5,22 @@ from rich import print as rprint
 import subprocess
 
 from core.config_utils import load_key
-from core.all_whisper_methods.demucs_vl import demucs_main, RAW_AUDIO_FILE, VOCAL_AUDIO_FILE
-from core.all_whisper_methods.audio_preprocess import process_transcription, convert_video_to_audio, split_audio, save_results, compress_audio, CLEANED_CHUNKS_EXCEL_PATH
+from core.all_whisper_methods.demucs_vl import demucs_main
+from core.all_whisper_methods.audio_preprocess import process_transcription, convert_video_to_audio, split_audio, save_results, compress_audio
 from core.step1_ytdlp import find_video_files
 
-WHISPER_FILE = "output/audio/for_whisper.mp3"
-ENHANCED_VOCAL_PATH = "output/audio/enhanced_vocals.mp3"
+import streamlit as st
 
 def enhance_vocals(vocals_ratio=2.50):
+    username = st.session_state.get('username')
+    ENHANCED_VOCAL_PATH = os.path.join("users", username, "output", "audio", "enhanced_vocals.mp3")
+    
+    AUDIO_DIR = os.path.join("users", username, "output", "audio")
+    RAW_AUDIO_FILE = os.path.join(AUDIO_DIR, "raw.mp3")
+    VOCAL_AUDIO_FILE = os.path.join(AUDIO_DIR, "vocal.mp3")
+
     """Enhance vocals audio volume"""
-    if not load_key("demucs"):
+    if not load_key("demucs",username=username):
         return RAW_AUDIO_FILE
         
     try:
@@ -32,20 +38,30 @@ def enhance_vocals(vocals_ratio=2.50):
         return VOCAL_AUDIO_FILE  # Fallback to original vocals if enhancement fails
     
 def transcribe():
+    username = st.session_state.get('username')
+    AUDIO_DIR = os.path.join("users", username, "output", "audio")
+    CLEANED_CHUNKS_EXCEL_PATH = os.path.join("users", username, "output", "log", "cleaned_chunks.xlsx")
+    RAW_AUDIO_FILE = os.path.join(AUDIO_DIR, "raw.mp3")
+
     if os.path.exists(CLEANED_CHUNKS_EXCEL_PATH):
         rprint("[yellow]⚠️ Transcription results already exist, skipping transcription step.[/yellow]")
         return
     
     # step0 Convert video to audio
-    video_file = find_video_files()
+    username = st.session_state.get('username')
+    video_file = find_video_files(username=username)
     convert_video_to_audio(video_file)
 
     # step1 Demucs vocal separation:
-    if load_key("demucs"):
+    if load_key("demucs", username=username):
         demucs_main()
     
     # step2 Compress audio
-    choose_audio = enhance_vocals() if load_key("demucs") else RAW_AUDIO_FILE
+    choose_audio = enhance_vocals() if load_key("demucs", username=username) else RAW_AUDIO_FILE
+    
+    base_path = os.path.join("users", username, "output", "audio")
+    WHISPER_FILE = os.path.join(base_path, "for_whisper.mp3")
+
     whisper_audio = compress_audio(choose_audio, WHISPER_FILE)
 
     # step3 Extract audio
@@ -53,7 +69,7 @@ def transcribe():
     
     # step4 Transcribe audio
     all_results = []
-    if load_key("whisper.runtime") == "local":
+    if load_key("whisper.runtime", username=username) == "local":
         from core.all_whisper_methods.whisperX_local import transcribe_audio as ts
         rprint("[cyan]🎤 Transcribing audio with local model...[/cyan]")
     else:

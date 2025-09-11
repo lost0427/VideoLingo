@@ -4,8 +4,8 @@ from core.config_utils import load_key
 
 ## ================================================================
 # @ step4_splitbymeaning.py
-def get_split_prompt(sentence, num_parts = 2, word_limit = 20):
-    language = load_key("whisper.detected_language")
+def get_split_prompt(sentence, username, num_parts = 2, word_limit = 20):
+    language = load_key("whisper.detected_language", username=username)
     split_prompt = f"""
 ### Role
 You are a professional Netflix subtitle splitter in {language}.
@@ -37,9 +37,9 @@ Split the given subtitle text into {num_parts} parts, each less than {word_limit
 
 ## ================================================================
 # @ step4_1_summarize.py
-def get_summary_prompt(source_content, custom_terms_json=None):
-    src_lang = load_key("whisper.detected_language")
-    tgt_lang = load_key("target_language")
+def get_summary_prompt(source_content, username, custom_terms_json=None):
+    src_lang = load_key("whisper.detected_language", username=username)
+    tgt_lang = load_key("target_language", username=username)
     
     # add custom terms note
     terms_note = ""
@@ -124,8 +124,8 @@ def generate_shared_prompt(previous_content_prompt, after_content_prompt, summar
 ### Points to Note
 {things_to_note_prompt}'''
 
-def get_prompt_faithfulness(lines, shared_prompt):
-    TARGET_LANGUAGE = load_key("target_language")
+def get_prompt_faithfulness(lines, shared_prompt, username):
+    TARGET_LANGUAGE = load_key("target_language", username=username)
     # Split lines by \n
     line_splits = lines.split('\n')
     
@@ -137,7 +137,7 @@ def get_prompt_faithfulness(lines, shared_prompt):
             "direct": f"<<direct {TARGET_LANGUAGE} translation>>"
         }
     
-    src_language = load_key("whisper.detected_language")
+    src_language = load_key("whisper.detected_language", username=username)
     prompt_faithfulness = f'''
 ### Role Definition
 You are a professional Netflix subtitle translator, fluent in both {src_language} and {TARGET_LANGUAGE}, as well as their respective cultures. Your expertise lies in accurately understanding the semantics and structure of the original {src_language} text and faithfully translating it into {TARGET_LANGUAGE} while preserving the original meaning.
@@ -169,8 +169,8 @@ Please complete the following JSON data, where << >> represents placeholders tha
     return prompt_faithfulness.strip()
 
 
-def get_prompt_expressiveness(faithfulness_result, lines, shared_prompt):
-    TARGET_LANGUAGE = load_key("target_language")
+def get_prompt_expressiveness(faithfulness_result, lines, shared_prompt, username):
+    TARGET_LANGUAGE = load_key("target_language", username=username)
     json_format = {}
     for key, value in faithfulness_result.items():
         json_format[key] = {
@@ -180,7 +180,7 @@ def get_prompt_expressiveness(faithfulness_result, lines, shared_prompt):
             "free": f"retranslated result, aiming for fluency and naturalness, conforming to {TARGET_LANGUAGE} expression habits, DO NOT leave empty line here!"
         }
 
-    src_language = load_key("whisper.detected_language")
+    src_language = load_key("whisper.detected_language", username=username)
     prompt_expressiveness = f'''
 ### Role Definition
 You are a professional Netflix subtitle translator and language consultant. Your expertise lies not only in accurately understanding the original {src_language} but also in optimizing the {TARGET_LANGUAGE} translation to better suit the target language's expression habits and cultural background.
@@ -222,9 +222,9 @@ Please use a two-step thinking process to handle the text line by line:
 
 ## ================================================================
 # @ step6_splitforsub.py
-def get_align_prompt(src_sub, tr_sub, src_part):
-    TARGET_LANGUAGE = load_key("target_language")
-    src_language = load_key("whisper.detected_language")
+def get_align_prompt(src_sub, tr_sub, src_part, username):
+    TARGET_LANGUAGE = load_key("target_language", username=username)
+    src_language = load_key("whisper.detected_language", username=username)
     src_splits = src_part.split('\n')
     num_parts = len(src_splits)
     src_part = src_part.replace('\n', ' [br] ')

@@ -7,11 +7,13 @@ from openai import OpenAI
 import time
 from requests.exceptions import RequestException
 from core.config_utils import load_key
+import streamlit as st
 
-LOG_FOLDER = 'output/gpt_log'
 LOCK = Lock()
 
-def save_log(model, prompt, response, log_title = 'default', message = None):
+def save_log(model, prompt, response, username, log_title = 'default', message = None):
+    LOG_FOLDER = os.path.join("users", username, "output", "gpt_log")
+
     os.makedirs(LOG_FOLDER, exist_ok=True)
     log_data = {
         "model": model,
@@ -30,8 +32,10 @@ def save_log(model, prompt, response, log_title = 'default', message = None):
     with open(log_file, 'w', encoding='utf-8') as f:
         json.dump(logs, f, ensure_ascii=False, indent=4)
         
-def check_ask_gpt_history(prompt, model, log_title):
+def check_ask_gpt_history(prompt, model, log_title, username):
     # check if the prompt has been asked before
+    LOG_FOLDER = os.path.join("users", username, "output", "gpt_log")
+
     if not os.path.exists(LOG_FOLDER):
         return False
     file_path = os.path.join(LOG_FOLDER, f"{log_title}.json")
@@ -43,11 +47,11 @@ def check_ask_gpt_history(prompt, model, log_title):
                     return item["response"]
     return False
 
-def ask_gpt(prompt, response_json=True, valid_def=None, log_title='default'):
-    api_set = load_key("api")
-    llm_support_json = load_key("llm_support_json")
+def ask_gpt(prompt, username, response_json=True, valid_def=None, log_title='default'):
+    api_set = load_key("api", username=username)
+    llm_support_json = load_key("llm_support_json", username=username)
     with LOCK:
-        history_response = check_ask_gpt_history(prompt, api_set["model"], log_title)
+        history_response = check_ask_gpt_history(prompt, api_set["model"], log_title, username=username)
         if history_response:
             return history_response
     
@@ -80,14 +84,14 @@ def ask_gpt(prompt, response_json=True, valid_def=None, log_title='default'):
                     if valid_def:
                         valid_response = valid_def(response_data)
                         if valid_response['status'] != 'success':
-                            save_log(api_set["model"], prompt, response_data, log_title="error", message=valid_response['message'])
+                            save_log(api_set["model"], prompt, response_data, username=username, log_title="error", message=valid_response['message'])
                             raise ValueError(f"❎ API response error: {valid_response['message']}")
                         
                     break  # Successfully accessed and parsed, break the loop
                 except Exception as e:
                     response_data = response.choices[0].message.content
                     print(f"❎ json_repair parsing failed. Retrying: '''{response_data}'''")
-                    save_log(api_set["model"], prompt, response_data, log_title="error", message=f"json_repair parsing failed.")
+                    save_log(api_set["model"], prompt, response_data, username=username, log_title="error", message=f"json_repair parsing failed.")
                     if attempt == max_retries - 1:
                         raise Exception(f"JSON parsing still failed after {max_retries} attempts: {e}\n Please check your network connection or API key or `output/gpt_log/error.json` to debug.")
             else:
@@ -105,7 +109,7 @@ def ask_gpt(prompt, response_json=True, valid_def=None, log_title='default'):
                 raise Exception(f"Still failed after {max_retries} attempts: {e}")
     with LOCK:
         if log_title != 'None':
-            save_log(api_set["model"], prompt, response_data, log_title=log_title)
+            save_log(api_set["model"], prompt, response_data, username=username, log_title=log_title)
 
     return response_data
 

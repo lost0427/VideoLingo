@@ -4,10 +4,13 @@ from spacy.cli import download
 from rich import print
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from core.config_utils import load_key
+import streamlit as st
 
-SPACY_MODEL_MAP = load_key("spacy_model_map")
 
 def get_spacy_model(language: str):
+    username = st.session_state.get('username')
+    SPACY_MODEL_MAP = load_key("spacy_model_map", username=username)
+    
     model = SPACY_MODEL_MAP.get(language.lower(), "en_core_web_md")
     if language not in SPACY_MODEL_MAP:
         print(f"[yellow]Spacy model does not support '{language}', using en_core_web_md model as fallback...[/yellow]")

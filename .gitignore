@@ -172,3 +172,7 @@ config.backup.yaml
 runtime/
 dev/
 installer_files/
+
+users/
+.vscode/
+auth.yaml

@@ -5,15 +5,10 @@ import re
 from rich.panel import Panel
 from rich.console import Console
 import autocorrect_py as autocorrect
+import streamlit as st
 
 console = Console()
 
-CLEANED_CHUNKS_FILE = 'output/log/cleaned_chunks.xlsx'
-TRANSLATION_RESULTS_FOR_SUBTITLES_FILE = 'output/log/translation_results_for_subtitles.xlsx'
-TRANSLATION_RESULTS_REMERGED_FILE = 'output/log/translation_results_remerged.xlsx'
-
-OUTPUT_DIR = 'output'
-AUDIO_OUTPUT_DIR = 'output/audio'
 
 SUBTITLE_OUTPUT_CONFIGS = [ 
     ('src.srt', ['Source']),
@@ -155,6 +150,13 @@ def clean_translation(x):
     return autocorrect.format(cleaned)
 
 def align_timestamp_main():
+    username = st.session_state.get('username')
+    CLEANED_CHUNKS_FILE = os.path.join("users", username, "output", "log", "cleaned_chunks.xlsx")
+    TRANSLATION_RESULTS_FOR_SUBTITLES_FILE = os.path.join("users", username, "output", "log", "translation_results_for_subtitles.xlsx")
+    TRANSLATION_RESULTS_REMERGED_FILE = os.path.join("users", username, "output", "log", "translation_results_remerged.xlsx")
+    OUTPUT_DIR = os.path.join("users", username, "output")
+    AUDIO_OUTPUT_DIR = os.path.join("users", username, "output", "audio")
+    
     df_text = pd.read_excel(CLEANED_CHUNKS_FILE)
     df_text['text'] = df_text['text'].str.strip('"').str.strip()
     df_translate = pd.read_excel(TRANSLATION_RESULTS_FOR_SUBTITLES_FILE)

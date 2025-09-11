@@ -37,7 +37,8 @@ from translations.translations import translate as t
 
 def download_subtitle_zip_button(text: str):
     zip_buffer = io.BytesIO()
-    output_dir = "output"
+    username = st.session_state.get('username')
+    output_dir = os.path.join("users", username, "output")
     
     with zipfile.ZipFile(zip_buffer, "w") as zip_file:
         for file_name in os.listdir(output_dir):

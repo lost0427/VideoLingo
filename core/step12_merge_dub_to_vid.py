@@ -8,14 +8,11 @@ import cv2
 from rich import print as rprint
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from core.all_whisper_methods.demucs_vl import BACKGROUND_AUDIO_FILE
 from core.step7_merge_sub_to_vid import check_gpu_available
 from core.config_utils import load_key
 from core.step1_ytdlp import find_video_files
+import streamlit as st
 
-DUB_VIDEO = "output/output_dub.mp4"
-DUB_SUB_FILE = 'output/dub.srt'
-DUB_AUDIO = 'output/dub.mp3'
 
 TRANS_FONT_SIZE = 20
 TRANS_FONT_NAME = 'Arial'
@@ -29,9 +26,18 @@ TRANS_BACK_COLOR = '&H33000000'
 
 def merge_video_audio():
     """Merge video and audio, and reduce video volume"""
-    VIDEO_FILE = find_video_files()
+    username = st.session_state.get('username')
+    VIDEO_FILE = find_video_files(username=username)
+
+    AUDIO_DIR = os.path.join("users", username, "output", "audio")
+    BACKGROUND_AUDIO_FILE = os.path.join(AUDIO_DIR, "background.mp3")
+
     background_file = BACKGROUND_AUDIO_FILE
     
+    DUB_VIDEO = os.path.join("users", username, "output", "output_dub.mp4")
+    DUB_SUB_FILE = os.path.join("users", username, "output", "dub.srt")
+    DUB_AUDIO = os.path.join("users", username, "output", "dub.mp3")
+
     if not load_key("burn_subtitles"):
         rprint("[bold yellow]Warning: A 0-second black video will be generated as a placeholder as subtitles are not burned in.[/bold yellow]")
 

@@ -1,5 +1,8 @@
 import streamlit as st
-import os, sys
+import os, sys, shutil
+import streamlit_authenticator as stauth
+import yaml
+from yaml.loader import SafeLoader
 from st_components.imports_and_utils import *
 from core.config_utils import load_key
 
@@ -10,10 +13,10 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 st.set_page_config(page_title="VideoLingo", page_icon="docs/logo.svg")
 
-SUB_VIDEO = "output/output_sub.mp4"
-DUB_VIDEO = "output/output_dub.mp4"
 
 def text_processing_section():
+    username = st.session_state.get('username')
+    SUB_VIDEO = os.path.join("users", username, "output", "output_sub.mp4")
     st.header(t("b. Translate and Generate Subtitles"))
     with st.container(border=True):
         st.markdown(f"""
@@ -33,7 +36,7 @@ def text_processing_section():
                 process_text()
                 st.rerun()
         else:
-            if load_key("burn_subtitles"):
+            if load_key("burn_subtitles", username=username):
                 st.video(SUB_VIDEO)
             download_subtitle_zip_button(text=t("Download All Srt Files"))
             
@@ -50,7 +53,7 @@ def process_text():
         step3_2_splitbymeaning.split_sentences_by_meaning()
     with st.spinner(t("Summarizing and translating...")):
         step4_1_summarize.get_summary()
-        if load_key("pause_before_translate"):
+        if load_key("pause_before_translate", username=st.session_state.get('username')):
             input(t("⚠️ PAUSE_BEFORE_TRANSLATE. Go to `output/log/terminology.json` to edit terminology. Then press ENTER to continue..."))
         step4_2_translate_all.translate_all()
     with st.spinner(t("Processing and aligning subtitles...")): 
@@ -63,6 +66,8 @@ def process_text():
     st.balloons()
 
 def audio_processing_section():
+    username = st.session_state.get('username')
+    DUB_VIDEO = os.path.join("users", username, "output", "output_dub.mp4")
     st.header(t("c. Dubbing"))
     with st.container(border=True):
         st.markdown(f"""
@@ -80,7 +85,7 @@ def audio_processing_section():
                 st.rerun()
         else:
             st.success(t("Audio processing is complete! You can check the audio files in the `output` folder."))
-            if load_key("burn_subtitles"):
+            if load_key("burn_subtitles", username=username):
                 st.video(DUB_VIDEO) 
             if st.button(t("Delete dubbing files"), key="delete_dubbing_files"):
                 delete_dubbing_files()
@@ -106,19 +111,49 @@ def process_audio():
     st.balloons()
 
 def main():
-    logo_col, _ = st.columns([1,1])
-    with logo_col:
-        st.image("docs/logo.png", use_column_width=True)
-    st.markdown(button_style, unsafe_allow_html=True)
-    welcome_text = t("Hello, welcome to VideoLingo. If you encounter any issues, feel free to get instant answers with our Free QA Agent <a href=\"https://share.fastgpt.in/chat/share?shareId=066w11n3r9aq6879r4z0v9rh\" target=\"_blank\">here</a>! You can also try out our SaaS website at <a href=\"https://videolingo.io\" target=\"_blank\">videolingo.io</a> for free!")
-    st.markdown(f"<p style='font-size: 20px; color: #808080;'>{welcome_text}</p>", unsafe_allow_html=True)
-    # add settings
-    with st.sidebar:
-        page_setting()
-        st.markdown(give_star_button, unsafe_allow_html=True)
-    download_video_section()
-    text_processing_section()
-    audio_processing_section()
+    with open('auth.yaml') as file:
+        config = yaml.load(file, Loader=SafeLoader)
+
+    authenticator = stauth.Authenticate(
+        config['credentials'],
+        config['cookie']['name'],
+        config['cookie']['key'],
+        config['cookie']['expiry_days']
+    )
+
+    authenticator.login()
+    name = st.session_state.get('name')
+    authentication_status = st.session_state.get('authentication_status')
+    username = st.session_state.get('username')
+
+    if authentication_status:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        user_dir = os.path.join(base_dir, "users", username)
+        os.makedirs(user_dir, exist_ok=True)
+        
+        config_path = os.path.join(user_dir, "config.yaml")
+        if not os.path.exists(config_path):
+            shutil.copy(os.path.join(base_dir, "config.yaml"), config_path)
+
+        logo_col, _ = st.columns([1,1])
+        with logo_col:
+            st.image("docs/logo.png", use_column_width=True)
+        st.markdown(button_style, unsafe_allow_html=True)
+        welcome_text = t("Hello, welcome to VideoLingo. If you encounter any issues, feel free to get instant answers with our Free QA Agent <a href=\"https://share.fastgpt.in/chat/share?shareId=066w11n3r9aq6879r4z0v9rh\" target=\"_blank\">here</a>! You can also try out our SaaS website at <a href=\"https://videolingo.io\" target=\"_blank\">videolingo.io</a> for free!")
+        st.markdown(f"<p style='font-size: 20px; color: #808080;'>{welcome_text}</p>", unsafe_allow_html=True)
+        # add settings
+        with st.sidebar:
+            authenticator.logout('Logout', 'main')
+            st.markdown(f"<p style='font-size: 20px;'>{t('Welcome')} {name}</p>", unsafe_allow_html=True)
+            page_setting()
+            st.markdown(give_star_button, unsafe_allow_html=True)
+        download_video_section()
+        text_processing_section()
+        audio_processing_section()
+    elif authentication_status == False:
+        st.error('Username/password is incorrect')
+    elif authentication_status == None:
+        st.warning('Please enter your username and password')
 
 if __name__ == "__main__":
     main()

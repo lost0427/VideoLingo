@@ -6,6 +6,7 @@ from rich import print as rprint
 import cv2
 import numpy as np
 import platform
+import streamlit as st
 
 SRC_FONT_SIZE = 15
 TRANS_FONT_SIZE = 17
@@ -26,10 +27,6 @@ TRANS_OUTLINE_COLOR = '&H000000'
 TRANS_OUTLINE_WIDTH = 1 
 TRANS_BACK_COLOR = '&H33000000'
 
-OUTPUT_DIR = "output"
-OUTPUT_VIDEO = f"{OUTPUT_DIR}/output_sub.mp4"
-SRC_SRT = f"{OUTPUT_DIR}/src.srt"
-TRANS_SRT = f"{OUTPUT_DIR}/trans.srt"
     
 def check_gpu_available():
     try:
@@ -39,11 +36,16 @@ def check_gpu_available():
         return False
 
 def merge_subtitles_to_video():
-    video_file = find_video_files()
+    username = st.session_state.get('username')
+    video_file = find_video_files(username=username)
+    SRC_SRT = os.path.join("users", username, "output", "src.srt").replace("\\", "/")
+    TRANS_SRT = os.path.join("users", username, "output", "trans.srt").replace("\\", "/")
+    OUTPUT_VIDEO = os.path.join("users", username, "output", "output_sub.mp4").replace("\\", "/")
+
     os.makedirs(os.path.dirname(OUTPUT_VIDEO), exist_ok=True)
 
     # Check resolution
-    if not load_key("burn_subtitles"):
+    if not load_key("burn_subtitles", username=username):
         rprint("[bold yellow]Warning: A 0-second black video will be generated as a placeholder as subtitles are not burned in.[/bold yellow]")
 
         # Create a black frame

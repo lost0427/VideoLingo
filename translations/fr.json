@@ -102,5 +102,6 @@
     "WhisperX 302ai API": "API 302ai WhisperX",
     "Detected NVIDIA GPU(s)": "GPU(s) NVIDIA détecté(s)",
     "No NVIDIA GPU detected": "Aucun GPU NVIDIA détecté",
-    "No NVIDIA GPU detected or NVIDIA drivers not properly installed": "Aucun GPU NVIDIA détecté ou pilotes NVIDIA mal installés"
+    "No NVIDIA GPU detected or NVIDIA drivers not properly installed": "Aucun GPU NVIDIA détecté ou pilotes NVIDIA mal installés",
+    "Welcome": "Bienvenue"
 }

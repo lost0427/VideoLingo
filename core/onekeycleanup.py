@@ -6,7 +6,10 @@ import shutil
 
 def cleanup(history_dir="history"):
     # Get video file name
-    video_file = find_video_files()
+    # 获取当前用户名
+    import streamlit as st
+    username = st.session_state.get('username')
+    video_file = find_video_files(username=username)
     video_name = video_file.split("/")[1]
     video_name = os.path.splitext(video_name)[0]
     video_name = sanitize_filename(video_name)

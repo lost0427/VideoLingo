@@ -102,5 +102,6 @@
     "Installing requirements using `pip install -r requirements.txt`": "依存関係を `pip install -r requirements.txt` でインストール中",
     "Detected NVIDIA GPU(s)": "NVIDIA GPUを検出しました",
     "No NVIDIA GPU detected": "NVIDIA GPUが検出されません",
-    "No NVIDIA GPU detected or NVIDIA drivers not properly installed": "NVIDIA GPUが検出されないか、NVIDIAドライバーが正しくインストールされていません"
+    "No NVIDIA GPU detected or NVIDIA drivers not properly installed": "NVIDIA GPUが検出されないか、NVIDIAドライバーが正しくインストールされていません",
+    "Welcome": "ようこそ"
 }

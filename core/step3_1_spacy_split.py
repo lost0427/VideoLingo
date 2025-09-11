@@ -8,8 +8,13 @@ from spacy_utils.split_by_mark import split_by_mark
 from spacy_utils.split_long_by_root import split_long_by_root_main
 from spacy_utils.load_nlp_model import init_nlp
 
+import streamlit as st
+
 def split_by_spacy():
-    if os.path.exists('output/log/sentence_splitbynlp.txt'):
+    username = st.session_state.get('username')
+    base_path = os.path.join("users", username, "output", "log")
+    
+    if os.path.exists(os.path.join(base_path, 'sentence_splitbynlp.txt')):
         print("File 'sentence_splitbynlp.txt' already exists. Skipping split_by_spacy.")
         return
     

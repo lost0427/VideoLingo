@@ -6,6 +6,7 @@ from core.spacy_utils.load_nlp_model import init_nlp
 from core.config_utils import load_key, get_joiner
 from rich import print
 import string
+import streamlit as st
 
 def split_long_sentence(doc):
     tokens = [token.text for token in doc]
@@ -63,8 +64,11 @@ def split_extremely_long_sentence(doc):
 
 
 def split_long_by_root_main(nlp):
-
-    with open("output/log/sentence_splitbyconnector.txt", "r", encoding="utf-8") as input_file:
+    username = st.session_state.get('username')
+    SENTENCES_BY_CONNECTORS_PATH = os.path.join("users", username, "output", "log", "sentence_splitbyconnector.txt")
+    SENTENCES_BY_NLP_PATH = os.path.join("users", username, "output", "log", "sentence_splitbynlp.txt")
+    
+    with open(SENTENCES_BY_CONNECTORS_PATH, "r", encoding="utf-8") as input_file:
         sentences = input_file.readlines()
 
     all_split_sentences = []
@@ -81,7 +85,7 @@ def split_long_by_root_main(nlp):
 
     punctuation = string.punctuation + "'" + '"'  # include all punctuation and apostrophe ' and "
 
-    with open("output/log/sentence_splitbynlp.txt", "w", encoding="utf-8") as output_file:
+    with open(SENTENCES_BY_NLP_PATH, "w", encoding="utf-8") as output_file:
         for i, sentence in enumerate(all_split_sentences):
             stripped_sentence = sentence.strip()
             if not stripped_sentence or all(char in punctuation for char in stripped_sentence):
@@ -92,7 +96,7 @@ def split_long_by_root_main(nlp):
             output_file.write(sentence + "\n")
 
     # delete the original file
-    os.remove("output/log/sentence_splitbyconnector.txt")   
+    os.remove(SENTENCES_BY_CONNECTORS_PATH)   
 
     print("[green]💾 Long sentences split by root saved to →  `sentence_splitbynlp.txt`[/green]")
 

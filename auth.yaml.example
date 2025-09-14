@@ -1,0 +1,20 @@
+cookie:
+  expiry_days: 30
+  key: "" # To be filled with any string
+  name: "" # To be filled with any string
+credentials:
+  usernames:
+    Xxx1:
+      email: xxxxxxx@xxxxx.com
+      failed_login_attempts: 0 # Will be managed automatically
+      first_name: Xxxx
+      last_name: Xxxxx
+      logged_in: False # Will be managed automatically
+      password: "Xxxxxxxx" # Will be hashed automatically
+    Xxx2:
+      email: xxxxxxx@xxxxx.com
+      failed_login_attempts: 0 # Will be managed automatically
+      first_name: Xxxxxxx
+      last_name: Xxxxxx
+      logged_in: False # Will be managed automatically
+      password: "Xxxxxxxx" # Will be hashed automatically

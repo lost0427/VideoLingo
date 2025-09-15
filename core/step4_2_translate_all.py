@@ -73,12 +73,12 @@ def translate_all():
         theme_prompt = json.load(file).get('theme')
 
     # 🔄 Use concurrent execution for translation
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        transient=True,
-    ) as progress:
-        task = progress.add_task("[cyan]Translating chunks...", total=len(chunks))
+    # with Progress(
+    #     SpinnerColumn(),
+    #     TextColumn("[progress.description]{task.description}"),
+    #     transient=True,
+    # ) as progress:
+    #     task = progress.add_task("[cyan]Translating chunks...", total=len(chunks))
         with concurrent.futures.ThreadPoolExecutor(max_workers=load_key("max_workers", username=username)) as executor:
             futures = []
             for i, chunk in enumerate(chunks):
@@ -88,7 +88,7 @@ def translate_all():
             results = []
             for future in concurrent.futures.as_completed(futures):
                 results.append(future.result())
-                progress.update(task, advance=1)
+                # progress.update(task, advance=1)
 
     results.sort(key=lambda x: x[0])  # Sort results based on original order
     

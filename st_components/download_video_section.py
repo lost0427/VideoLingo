@@ -7,6 +7,30 @@ from time import sleep
 import re
 import subprocess
 from translations.translations import translate as t
+from urllib.parse import urlparse, parse_qs
+import requests
+
+
+def get_youtube_info(video_id):
+    url = f"https://ytapi.apps.mattw.io/v3/videos?key=foo1&part=snippet&id={video_id}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        
+        items = data.get("items", [])
+        if items:
+            snippet = items[0].get("snippet", {})
+            title = snippet.get("title", "")
+            publishedAt = snippet.get("publishedAt", "")
+            description = snippet.get("description", "")
+            channelTitle = snippet.get("channelTitle", "")
+            return title, publishedAt, description, channelTitle
+        else:
+            return "", "", "", ""
+    except Exception as e:
+        print(f"Error fetching YouTube info: {e}")
+        return "", "", "", ""
 
 
 def download_video_section():
@@ -17,6 +41,38 @@ def download_video_section():
         try:
             video_file = find_video_files(username=username)
             st.video(video_file)
+
+            url_file_path = os.path.join("users", username, "output", "url.txt")
+            if os.path.exists(url_file_path):
+                with open(url_file_path, "r", encoding="utf-8") as f:
+                    saved_url = f.read().strip()
+            else:
+                saved_url = ""
+
+            url_data = urlparse(saved_url)
+            query = parse_qs(url_data.query)
+            video_id = query.get("v", [None])[0]
+
+            if video_id:
+                title, publishedAt, description, channelTitle = get_youtube_info(video_id)
+                safe_desc = description.replace("\n", "<br>")
+                thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
+                st.markdown(
+                    f"""
+                    <div style="max-height:200px; overflow:hidden; border-radius:0.5rem;">
+                        <img src="{thumbnail_url}" style="max-height:200px; width:auto; border-radius:6px;">
+                    </div>
+                    <br>
+                    """,
+                    unsafe_allow_html=True
+                )
+                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{saved_url}</p>""", unsafe_allow_html=True)
+                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{channelTitle}</p>""", unsafe_allow_html=True)
+                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{publishedAt}</p>""", unsafe_allow_html=True)
+                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{title}</p>""", unsafe_allow_html=True)
+                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px; ">{safe_desc}</p>""", unsafe_allow_html=True)
+            
+
             if st.button(t("Delete and Reselect"), key="delete_video_button"):
                 os.remove(video_file)
                 if os.path.exists(OUTPUT_DIR):
@@ -41,6 +97,11 @@ def download_video_section():
                 res = res_dict[res_display]
             if st.button(t("Download Video"), key="download_button", use_container_width=True):
                 if url:
+                    output_dir = os.path.join("users", username, "output")
+                    os.makedirs(output_dir, exist_ok=True)
+                    url_file_path = os.path.join(output_dir, "url.txt")
+                    with open(url_file_path, "w") as f:
+                        f.write(url)
                     with st.spinner("Downloading video..."):
                         download_video_ytdlp(url, resolution=res, username=username)
                     st.rerun()

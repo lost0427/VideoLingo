@@ -55,6 +55,7 @@ def download_video_section():
                 video_id = query.get("v", [None])[0]
 
                 if video_id:
+                    clean_url = f"https://www.youtube.com/watch?v={video_id}"
                     title, publishedAt, description, channelTitle = get_youtube_info(video_id)
                     safe_desc = description.replace("\n", "<br>")
                     thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
@@ -67,7 +68,7 @@ def download_video_section():
                         """,
                         unsafe_allow_html=True
                     )
-                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{saved_url}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{clean_url}</p>""", unsafe_allow_html=True)
                     st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{channelTitle}</p>""", unsafe_allow_html=True)
                     st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{publishedAt}</p>""", unsafe_allow_html=True)
                     st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{title}</p>""", unsafe_allow_html=True)

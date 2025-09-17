@@ -9,6 +9,7 @@ import subprocess
 from translations.translations import translate as t
 from urllib.parse import urlparse, parse_qs
 import requests
+from datetime import datetime, timezone, timedelta
 
 
 def get_youtube_info(video_id):
@@ -57,6 +58,10 @@ def download_video_section():
                 if video_id:
                     clean_url = f"https://www.youtube.com/watch?v={video_id}"
                     title, publishedAt, description, channelTitle = get_youtube_info(video_id)
+                    publishedAt = datetime.fromisoformat(publishedAt.replace("Z", "+00:00")) \
+                        .astimezone(timezone(timedelta(hours=8))) \
+                        .strftime("%Y.%m.%d %H:%M:%S")
+
                     safe_desc = description.replace("\n", "<br>")
                     thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
                     st.markdown(

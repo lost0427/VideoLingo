@@ -99,6 +99,9 @@ def download_video_section():
                 res = res_dict[res_display]
             if st.button(t("Download Video"), key="download_button", use_container_width=True):
                 if url:
+                    if url.startswith("https://youtu.be/"):
+                        video_id = url.split("/")[-1].split("?")[0]
+                        url = f"https://www.youtube.com/watch?v={video_id}"
                     output_dir = os.path.join("users", username, "output")
                     os.makedirs(output_dir, exist_ok=True)
                     url_file_path = os.path.join(output_dir, "url.txt")

@@ -24,6 +24,12 @@ def page_setting():
         update_key("display_language", DISPLAY_LANGUAGES[display_language], username=username)
         st.rerun()
 
+    with st.expander(t("Video Download Configuration"), expanded=True):
+        h264 = st.toggle(t("Download H.264 (MP4)"), value=load_key("h264", username=username), help=t("Off for WebM format - smaller size but not supported by CapCut mobile"))
+        if h264 != load_key("h264", username=username):
+            update_key("h264", h264, username=username)
+            st.rerun()
+        
     with st.expander(t("LLM Configuration"), expanded=True):
         config_input(t("API_KEY"), "api.key")
         config_input(t("BASE_URL"), "api.base_url", help=t("Openai format, will add /v1/chat/completions automatically"))

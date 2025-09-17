@@ -107,5 +107,6 @@
     "Video Download Configuration": "Configuration du téléchargement vidéo",
     "Download H.264 (MP4)": "Télécharger H.264 (MP4)",
     "Off for WebM format - smaller size but not supported by CapCut mobile": "Désactivé pour le format WebM - taille plus petite mais non pris en charge par CapCut mobile",
-    "Show YouTube metadata": "Afficher les métadonnées YouTube"
+    "Show YouTube metadata": "Afficher les métadonnées YouTube",
+    "Download": "Télécharger"
 }

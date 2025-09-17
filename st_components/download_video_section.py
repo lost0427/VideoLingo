@@ -74,6 +74,12 @@ def download_video_section():
                     st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{title}</p>""", unsafe_allow_html=True)
                     st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px; ">{safe_desc}</p>""", unsafe_allow_html=True)
             
+            with open(video_file, "rb") as file:
+                st.download_button(
+                    label=t("Download"),
+                    data=file,
+                    file_name=os.path.basename(video_file),
+                )
 
             if st.button(t("Delete and Reselect"), key="delete_video_button"):
                 os.remove(video_file)

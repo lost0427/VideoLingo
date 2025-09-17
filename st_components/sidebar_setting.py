@@ -29,6 +29,10 @@ def page_setting():
         if h264 != load_key("h264", username=username):
             update_key("h264", h264, username=username)
             st.rerun()
+        metadata = st.toggle(t("Show YouTube metadata"), value=load_key("metadata", username=username))
+        if metadata != load_key("metadata", username=username):
+            update_key("metadata", metadata, username=username)
+            st.rerun()
         
     with st.expander(t("LLM Configuration"), expanded=True):
         config_input(t("API_KEY"), "api.key")

@@ -42,35 +42,36 @@ def download_video_section():
             video_file = find_video_files(username=username)
             st.video(video_file)
 
-            url_file_path = os.path.join("users", username, "output", "url.txt")
-            if os.path.exists(url_file_path):
-                with open(url_file_path, "r", encoding="utf-8") as f:
-                    saved_url = f.read().strip()
-            else:
-                saved_url = ""
+            if load_key("metadata", username=username):
+                url_file_path = os.path.join("users", username, "output", "url.txt")
+                if os.path.exists(url_file_path):
+                    with open(url_file_path, "r", encoding="utf-8") as f:
+                        saved_url = f.read().strip()
+                else:
+                    saved_url = ""
 
-            url_data = urlparse(saved_url)
-            query = parse_qs(url_data.query)
-            video_id = query.get("v", [None])[0]
+                url_data = urlparse(saved_url)
+                query = parse_qs(url_data.query)
+                video_id = query.get("v", [None])[0]
 
-            if video_id:
-                title, publishedAt, description, channelTitle = get_youtube_info(video_id)
-                safe_desc = description.replace("\n", "<br>")
-                thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
-                st.markdown(
-                    f"""
-                    <div style="max-height:200px; overflow:hidden; border-radius:0.5rem;">
-                        <img src="{thumbnail_url}" style="max-height:200px; width:auto; border-radius:6px;">
-                    </div>
-                    <br>
-                    """,
-                    unsafe_allow_html=True
-                )
-                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{saved_url}</p>""", unsafe_allow_html=True)
-                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{channelTitle}</p>""", unsafe_allow_html=True)
-                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{publishedAt}</p>""", unsafe_allow_html=True)
-                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{title}</p>""", unsafe_allow_html=True)
-                st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px; ">{safe_desc}</p>""", unsafe_allow_html=True)
+                if video_id:
+                    title, publishedAt, description, channelTitle = get_youtube_info(video_id)
+                    safe_desc = description.replace("\n", "<br>")
+                    thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
+                    st.markdown(
+                        f"""
+                        <div style="max-height:200px; overflow:hidden; border-radius:0.5rem;">
+                            <img src="{thumbnail_url}" style="max-height:200px; width:auto; border-radius:6px;">
+                        </div>
+                        <br>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{saved_url}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{channelTitle}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{publishedAt}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{title}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px; ">{safe_desc}</p>""", unsafe_allow_html=True)
             
 
             if st.button(t("Delete and Reselect"), key="delete_video_button"):

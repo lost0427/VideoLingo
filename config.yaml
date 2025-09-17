@@ -18,6 +18,9 @@ demucs: true
 # Whether to download h264 (mp4) video
 h264: false
 
+# Whether to show YouTube video metadata
+metadata: true
+
 whisper:
   # ["medium", "large-v3", "large-v3-turbo"]. Note: for zh model will force to use Belle/large-v3
   model: 'large-v3'

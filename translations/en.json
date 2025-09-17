@@ -103,5 +103,9 @@
     "Detected NVIDIA GPU(s)": "Detected NVIDIA GPU(s)",
     "No NVIDIA GPU detected": "No NVIDIA GPU detected",
     "No NVIDIA GPU detected or NVIDIA drivers not properly installed": "No NVIDIA GPU detected or NVIDIA drivers not properly installed",
-    "Welcome": "Welcome"
+    "Welcome": "Welcome",
+    "Video Download Configuration": "Video Download Configuration",
+    "Download H.264 (MP4)": "Download H.264 (MP4)",
+    "Off for WebM format - smaller size but not supported by CapCut mobile": "Off for WebM format - smaller size but not supported by CapCut mobile",
+    "Show YouTube metadata": "Show YouTube metadata"
 }

@@ -103,6 +103,10 @@
     "Detected NVIDIA GPU(s)": "检测到NVIDIA GPU",
     "No NVIDIA GPU detected": "未检测到NVIDIA GPU",
     "No NVIDIA GPU detected or NVIDIA drivers not properly installed": "未检测到NVIDIA GPU或NVIDIA驱动未正确安装",
-    "Welcome": "欢迎"
+    "Welcome": "欢迎",
+    "Video Download Configuration": "视频下载配置",
+    "Download H.264 (MP4)": "下载 H.264 (MP4)",
+    "Off for WebM format - smaller size but not supported by CapCut mobile": "关闭以使用 WebM 格式 - 文件更小但不被 CapCut 手机版支持",
+    "Show YouTube metadata": "显示 YouTube 元数据"
 }
 

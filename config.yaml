@@ -15,6 +15,9 @@ target_language: '简体中文'
 # Whether to use Demucs for vocal separation before transcription
 demucs: true
 
+# Whether to download h264 (mp4) video
+h264: false
+
 whisper:
   # ["medium", "large-v3", "large-v3-turbo"]. Note: for zh model will force to use Belle/large-v3
   model: 'large-v3'

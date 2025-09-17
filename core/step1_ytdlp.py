@@ -21,8 +21,21 @@ def download_video_ytdlp(url, save_path='output', resolution='1080', cutoff_time
         resolution = '360'
     
     os.makedirs(save_path, exist_ok=True)
+    
+    if resolution == 'best':
+        base_format = 'bestvideo+bestaudio/best'
+        h264_rule = 'bv[ext=mp4][vcodec^=avc1]+ba[ext=m4a]'
+    else:
+        base_format = f'bestvideo[height<={resolution}]+bestaudio/best[height<={resolution}]'
+        h264_rule = f'bv[ext=mp4][vcodec^=avc1][height<={resolution}]+ba[ext=m4a]'
+
+    if not load_key("h264", username=username):
+        format_str = base_format
+    else:
+        format_str = f"({h264_rule})/{base_format}"
+
     ydl_opts = {
-        'format': 'bestvideo+bestaudio/best' if resolution == 'best' else f'bestvideo[height<={resolution}]+bestaudio/best[height<={resolution}]',
+        'format': format_str,
         'outtmpl': f'{save_path}/%(title)s.%(ext)s',
         'noplaylist': True,
         'writethumbnail': True,

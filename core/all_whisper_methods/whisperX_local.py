@@ -14,6 +14,7 @@ import tempfile
 import threading
 from core.config_utils import load_key
 from core.all_whisper_methods.audio_preprocess import save_language
+import streamlit as st
 
 MODEL_DIR = load_key("model_dir")
 transcription_lock = threading.Lock()
@@ -50,8 +51,9 @@ def check_hf_mirror() -> str:
 
 def transcribe_audio(audio_file: str, start: float, end: float) -> Dict:
     with transcription_lock:
+        username = st.session_state.get('username')
         os.environ['HF_ENDPOINT'] = check_hf_mirror() #? don't know if it's working...
-        WHISPER_LANGUAGE = load_key("whisper.language")
+        WHISPER_LANGUAGE = load_key("whisper.language", username=username)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         rprint(f"🚀 Starting WhisperX using device: {device} ...")
         
@@ -71,7 +73,7 @@ def transcribe_audio(audio_file: str, start: float, end: float) -> Dict:
                 model_name = "Huan69/Belle-whisper-large-v3-zh-punct-fasterwhisper"
                 local_model = os.path.join(MODEL_DIR, "Belle-whisper-large-v3-zh-punct-fasterwhisper")
             else:
-                model_name = load_key("whisper.model")
+                model_name = load_key("whisper.model", username=username)
                 local_model = os.path.join(MODEL_DIR, model_name)
                 
             if os.path.exists(local_model):
@@ -80,7 +82,10 @@ def transcribe_audio(audio_file: str, start: float, end: float) -> Dict:
             else:
                 rprint(f"[green]📥 Using WHISPER model from HuggingFace:[/green] {model_name} ...")
 
-            vad_options = {"vad_onset": 0.500,"vad_offset": 0.363}
+            vad_options = {
+                "vad_onset": load_key("whisper.vad_onset", username=username),
+                "vad_offset": load_key("whisper.vad_offset", username=username)
+            }
             asr_options = {"temperatures": [0],"initial_prompt": "",}
             whisper_language = None if 'auto' in WHISPER_LANGUAGE else WHISPER_LANGUAGE
             rprint("[bold yellow]**You can ignore warning of `Model was trained with torch 1.10.0+cu102, yours is 2.0.0+cu118...`**[/bold yellow]")

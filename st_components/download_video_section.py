@@ -81,11 +81,11 @@ def download_video_section():
                         """,
                         unsafe_allow_html=True
                     )
-                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{clean_url}</p>""", unsafe_allow_html=True)
-                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{channelTitle}</p>""", unsafe_allow_html=True)
-                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{publishedAt}</p>""", unsafe_allow_html=True)
-                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px;">{title}</p>""", unsafe_allow_html=True)
-                    st.markdown(f"""<p style="background-color: rgba(38,39,48); padding: 0.5rem; border-radius: 6px; ">{safe_desc}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="border: 1px solid currentColor; padding: 0.5rem; border-radius: 6px;">{clean_url}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="border: 1px solid currentColor; padding: 0.5rem; border-radius: 6px;">{channelTitle}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="border: 1px solid currentColor; padding: 0.5rem; border-radius: 6px;">{publishedAt}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="border: 1px solid currentColor; padding: 0.5rem; border-radius: 6px;">{title}</p>""", unsafe_allow_html=True)
+                    st.markdown(f"""<p style="border: 1px solid currentColor; padding: 0.5rem; border-radius: 6px; ">{safe_desc}</p>""", unsafe_allow_html=True)
             
             with open(video_file, "rb") as file:
                 st.download_button(

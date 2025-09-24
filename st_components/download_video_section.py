@@ -54,9 +54,17 @@ def download_video_section():
                 url_data = urlparse(saved_url)
                 query = parse_qs(url_data.query)
                 video_id = query.get("v", [None])[0]
+                
+                # Handle YouTube Shorts URLs
+                if not video_id and "youtube.com/shorts/" in saved_url:
+                    video_id = saved_url.split("/shorts/")[-1].split("?")[0]
+                
+                # Handle youtu.be URLs
+                if not video_id and saved_url.startswith("https://youtu.be/"):
+                    video_id = saved_url.split("/")[-1].split("?")[0]
 
                 if video_id:
-                    clean_url = f"https://www.youtube.com/watch?v={video_id}"
+                    clean_url = saved_url if "youtube.com/shorts/" in saved_url or saved_url.startswith("https://youtu.be/") else f"https://www.youtube.com/watch?v={video_id}"
                     title, publishedAt, description, channelTitle = get_youtube_info(video_id)
                     publishedAt = datetime.fromisoformat(publishedAt.replace("Z", "+00:00")) \
                         .astimezone(timezone(timedelta(hours=8))) \
@@ -113,6 +121,9 @@ def download_video_section():
                     if url.startswith("https://youtu.be/"):
                         video_id = url.split("/")[-1].split("?")[0]
                         url = f"https://www.youtube.com/watch?v={video_id}"
+                    elif "youtube.com/shorts/" in url:
+                        video_id = url.split("/shorts/")[-1].split("?")[0]
+                        url = f"https://www.youtube.com/shorts/{video_id}"
                     output_dir = os.path.join("users", username, "output")
                     os.makedirs(output_dir, exist_ok=True)
                     url_file_path = os.path.join(output_dir, "url.txt")

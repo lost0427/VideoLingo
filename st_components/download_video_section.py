@@ -71,13 +71,31 @@ def download_video_section():
                         .strftime("%Y.%m.%d %H:%M:%S")
 
                     safe_desc = description.replace("\n", "<br>")
-                    thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
+                    thumbnail_url_maxres = f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
+                    thumbnail_url_sd = f"https://i.ytimg.com/vi/{video_id}/sddefault.jpg"
                     st.markdown(
                         f"""
-                        <div style="max-height:200px; overflow:hidden; border-radius:0.5rem;">
-                            <img src="{thumbnail_url}" style="max-height:200px; width:auto; border-radius:6px;">
+                        <div style="
+                            display: flex;
+                            max-height: 200px;
+                            gap: 8px;
+                            padding-right: 8px;
+                            border-radius: 6px;
+                            margin: 0px 0px 1rem;
+                        ">
+                            <img src="{thumbnail_url_maxres}" style="
+                                max-height: 200px;
+                                max-width: 50%;
+                                width: auto;
+                                object-fit: contain;
+                            ">
+                            <img src="{thumbnail_url_sd}" style="
+                                max-height: 200px;
+                                max-width: 50%;
+                                width: auto;
+                                object-fit: contain;
+                            ">
                         </div>
-                        <br>
                         """,
                         unsafe_allow_html=True
                     )

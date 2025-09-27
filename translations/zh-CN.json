@@ -110,6 +110,10 @@
     "Show YouTube metadata": "显示 YouTube 元数据",
     "Download": "下载",
     "Enable strong prompt": "启用强提示词",
-    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "启用 windsurf 强提示词：帮助弱模型保持专有名词不被翻译，但可能对高级模型有害"
+    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "启用 windsurf 强提示词：帮助弱模型保持专有名词不被翻译，但可能对高级模型有害",
+    "WhisperX vad_onset": "WhisperX vad_onset",
+    "Voice Activity Detection start threshold - Range: 0-1, higher more strict, lower more sensitive": "语音活动检测起始阈值 - 范围: 0-1，数值越高越严格，数值越低越灵敏",
+    "WhisperX vad_offset": "WhisperX vad_offset",
+    "Voice Activity Detection end threshold - Range: 0-1, lower detects weak signals, higher ends earlier": "语音活动检测结束阈值 - 范围: 0-1，数值越低可检测到弱信号，数值越高则更早结束"
 }
 

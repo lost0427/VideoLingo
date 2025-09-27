@@ -110,5 +110,9 @@
     "Show YouTube metadata": "Показать метаданные YouTube",
     "Download": "Скачать",
     "Enable strong prompt": "Включить сильный промпт",
-    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "Включить сильный промпт windsurf: помогает слабым моделям не переводить собственные имена, может навредить продвинутым моделям"
+    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "Включить сильный промпт windsurf: помогает слабым моделям не переводить собственные имена, может навредить продвинутым моделям",
+    "WhisperX vad_onset": "WhisperX vad_onset",
+    "Voice Activity Detection start threshold - Range: 0-1, higher more strict, lower more sensitive": "Порог начала обнаружения голосовой активности - Диапазон: 0-1, выше = строже, ниже = чувствительнее",
+    "WhisperX vad_offset": "WhisperX vad_offset",
+    "Voice Activity Detection end threshold - Range: 0-1, lower detects weak signals, higher ends earlier": "Порог окончания обнаружения голосовой активности - Диапазон: 0-1, ниже = обнаруживает слабые сигналы, выше = завершает раньше"
 }

@@ -85,7 +85,8 @@ def page_setting():
             if target_language != load_key("target_language", username=username):
                 update_key("target_language", target_language, username=username)
                 st.rerun()
-
+        config_input(t("WhisperX vad_onset"), "whisper.vad_onset", help=t("Voice Activity Detection start threshold - Range: 0-1, higher more strict, lower more sensitive"))
+        config_input(t("WhisperX vad_offset"), "whisper.vad_offset", help=t("Voice Activity Detection end threshold - Range: 0-1, lower detects weak signals, higher ends earlier"))
         demucs = st.toggle(t("Vocal separation enhance"), value=load_key("demucs", username=username), help=t("Recommended for videos with loud background noise, but will increase processing time"))
         if demucs != load_key("demucs", username=username):
             update_key("demucs", demucs, username=username)

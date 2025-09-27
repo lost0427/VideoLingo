@@ -110,5 +110,9 @@
     "Show YouTube metadata": "YouTubeメタデータを表示",
     "Download": "ダウンロード",
     "Enable strong prompt": "強力プロンプトを有効化",
-    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "ウィンドサーフ強力プロンプトを有効化：弱いモデルが固有名詞を翻訳せずに保持するのを助けるが、高度なモデルには悪影響を及ぼす可能性がある"
+    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "ウィンドサーフ強力プロンプトを有効化：弱いモデルが固有名詞を翻訳せずに保持するのを助けるが、高度なモデルには悪影響を及ぼす可能性がある",
+    "WhisperX vad_onset": "WhisperX vad_onset",
+    "Voice Activity Detection start threshold - Range: 0-1, higher more strict, lower more sensitive": "音声活動検出の開始しきい値 - 範囲: 0〜1、値が高いほど厳格、低いほど感度が高い",
+    "WhisperX vad_offset": "WhisperX vad_offset",
+    "Voice Activity Detection end threshold - Range: 0-1, lower detects weak signals, higher ends earlier": "音声活動検出の終了しきい値 - 範囲: 0〜1、値が低いほど弱い信号を検出、高いほど早く終了"
 }

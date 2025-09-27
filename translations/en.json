@@ -110,5 +110,9 @@
     "Show YouTube metadata": "Show YouTube metadata",
     "Download": "Download",
     "Enable strong prompt": "Enable strong prompt",
-    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models"
+    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models",
+    "WhisperX vad_onset": "WhisperX vad_onset",
+    "Voice Activity Detection start threshold - Range: 0-1, higher more strict, lower more sensitive": "Voice Activity Detection start threshold - Range: 0-1, higher more strict, lower more sensitive",
+    "WhisperX vad_offset": "WhisperX vad_offset",
+    "Voice Activity Detection end threshold - Range: 0-1, lower detects weak signals, higher ends earlier": "Voice Activity Detection end threshold - Range: 0-1, lower detects weak signals, higher ends earlier"
 }

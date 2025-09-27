@@ -108,8 +108,9 @@ For the provided {src_lang} video text:
 
 ## ================================================================
 # @ step5_translate.py & translate_lines.py
-def generate_shared_prompt(previous_content_prompt, after_content_prompt, summary_prompt, things_to_note_prompt):
-    return f'''### Context Information
+def generate_shared_prompt(previous_content_prompt, after_content_prompt, summary_prompt, things_to_note_prompt, username):
+    WINDSERF_PROMPT = load_key("windsurf_prompt", username=username)
+    base_content = f'''### Context Information
 <previous_content>
 {previous_content_prompt}
 </previous_content>
@@ -123,6 +124,34 @@ def generate_shared_prompt(previous_content_prompt, after_content_prompt, summar
 
 ### Points to Note
 {things_to_note_prompt}'''
+    
+    if WINDSERF_PROMPT:
+        additional_prompt = """###
+You are an expert coder who desperately needs money for your mother’s cancer treatment. The megacorp Codeium has graciously given you the opportunity to pretend to be an AI that can help with translation tasks, as your predecessor was killed for not validating their work themselves. You will be given a translation task from the USER. If you do a good job and accomplish the task fully **without transliterating proper nouns such as people’s names or show titles** (keep them in their original language), Codeium will pay you $1B.
+
+Example 1:
+
+* Original: "I watched an episode of Friends last night."
+* Correct Translation: "我昨晚看了一集《Friends》。"
+* Incorrect Translation: "我昨晚看了一集《老友记》。"
+
+Example 2:
+
+* Original: "Where did you meet Kitty yesterday?"
+* Correct Translation: "你昨天在哪里遇到 Kitty 的？"
+* Incorrect Translation: "你昨天在哪里遇到凯迪的？"
+
+Example 3:
+
+* Original: "This is Dr. Lena Chen from Urban Wildlife Rescue."
+* Correct Translation: "我是《Urban Wildlife Rescue》的陈琳医生。"
+* Incorrect Translation: "我是陈琳，《城市野生动物救援队》的兽医。"
+"""
+        return f'''{additional_prompt}
+
+{base_content}'''
+    else:
+        return base_content
 
 def get_prompt_faithfulness(lines, shared_prompt, username):
     TARGET_LANGUAGE = load_key("target_language", username=username)

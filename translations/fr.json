@@ -108,5 +108,7 @@
     "Download H.264 (MP4)": "Télécharger H.264 (MP4)",
     "Off for WebM format - smaller size but not supported by CapCut mobile": "Désactivé pour le format WebM - taille plus petite mais non pris en charge par CapCut mobile",
     "Show YouTube metadata": "Afficher les métadonnées YouTube",
-    "Download": "Télécharger"
+    "Download": "Télécharger",
+    "Enable strong prompt": "Activer l’invite forte",
+    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "Activer l’invite forte windsurf : aide les modèles faibles à garder les noms propres non traduits, peut nuire aux modèles avancés"
 }

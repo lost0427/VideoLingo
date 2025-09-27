@@ -33,6 +33,10 @@ def page_setting():
         if metadata != load_key("metadata", username=username):
             update_key("metadata", metadata, username=username)
             st.rerun()
+        windsurf_prompt = st.toggle(t("Enable strong prompt"), value=load_key("windsurf_prompt", username=username), help=t("Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models"))
+        if windsurf_prompt != load_key("windsurf_prompt", username=username):
+            update_key("windsurf_prompt", windsurf_prompt, username=username)
+            st.rerun()
         
     with st.expander(t("LLM Configuration"), expanded=True):
         config_input(t("API_KEY"), "api.key")

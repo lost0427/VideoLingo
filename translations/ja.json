@@ -108,5 +108,7 @@
     "Download H.264 (MP4)": "H.264 (MP4)をダウンロード",
     "Off for WebM format - smaller size but not supported by CapCut mobile": "WebM形式ではオフ - サイズは小さいがCapCutモバイルではサポートされていません",
     "Show YouTube metadata": "YouTubeメタデータを表示",
-    "Download": "ダウンロード"
+    "Download": "ダウンロード",
+    "Enable strong prompt": "強力プロンプトを有効化",
+    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "ウィンドサーフ強力プロンプトを有効化：弱いモデルが固有名詞を翻訳せずに保持するのを助けるが、高度なモデルには悪影響を及ぼす可能性がある"
 }

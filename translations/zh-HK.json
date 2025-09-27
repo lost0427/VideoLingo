@@ -108,5 +108,7 @@
     "Download H.264 (MP4)": "下載 H.264 (MP4)",
     "Off for WebM format - smaller size but not supported by CapCut mobile": "關閉以使用 WebM 格式 - 檔案更小但不被 CapCut 手機版支援",
     "Show YouTube metadata": "顯示 YouTube 元數據",
-    "Download": "下載"
+    "Download": "下載",
+    "Enable strong prompt": "啟用強提示詞",
+    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "啟用 windsurf 強提示詞：幫助弱模型保持專有名詞不被翻譯，但可能對高級模型有害"
 }

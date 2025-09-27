@@ -108,5 +108,7 @@
     "Download H.264 (MP4)": "Скачать H.264 (MP4)",
     "Off for WebM format - smaller size but not supported by CapCut mobile": "Выключено для формата WebM - меньший размер, но не поддерживается CapCut для мобильных устройств",
     "Show YouTube metadata": "Показать метаданные YouTube",
-    "Download": "Скачать"
+    "Download": "Скачать",
+    "Enable strong prompt": "Включить сильный промпт",
+    "Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models": "Включить сильный промпт windsurf: помогает слабым моделям не переводить собственные имена, может навредить продвинутым моделям"
 }

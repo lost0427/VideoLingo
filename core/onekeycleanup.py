@@ -10,9 +10,10 @@ def cleanup(history_dir="history"):
     import streamlit as st
     username = st.session_state.get('username')
     video_file = find_video_files(username=username)
-    video_name = video_file.split("/")[1]
-    video_name = os.path.splitext(video_name)[0]
-    video_name = sanitize_filename(video_name)
+    file_name, file_extension = os.path.splitext(video_file)
+    # video_name = video_file.split("/")[1]
+    # video_name = os.path.splitext(video_name)[0]
+    video_name = sanitize_filename(file_name)
     
     # Create required folders
     os.makedirs(history_dir, exist_ok=True)
@@ -22,24 +23,27 @@ def cleanup(history_dir="history"):
     os.makedirs(log_dir, exist_ok=True)
     os.makedirs(gpt_log_dir, exist_ok=True)
 
+    # Define the user-specific output directory
+    output_dir = os.path.join("users", username, "output") if username else "output"
+    
     # Move non-log files
-    for file in glob.glob("output/*"):
+    for file in glob.glob(os.path.join(output_dir, "*")):
         if not file.endswith(('log', 'gpt_log')):
             move_file(file, video_history_dir)
 
     # Move log files
-    for file in glob.glob("output/log/*"):
+    for file in glob.glob(os.path.join(output_dir, "log", "*")):
         move_file(file, log_dir)
 
     # Move gpt_log files
-    for file in glob.glob("output/gpt_log/*"):
+    for file in glob.glob(os.path.join(output_dir, "gpt_log", "*")):
         move_file(file, gpt_log_dir)
 
     # Delete empty output directories
     try:
-        os.rmdir("output/log")
-        os.rmdir("output/gpt_log")
-        os.rmdir("output")
+        os.rmdir(os.path.join(output_dir, "log"))
+        os.rmdir(os.path.join(output_dir, "gpt_log"))
+        os.rmdir(output_dir)
     except OSError:
         pass  # Ignore errors when deleting directories
 

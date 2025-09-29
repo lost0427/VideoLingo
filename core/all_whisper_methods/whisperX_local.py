@@ -83,8 +83,8 @@ def transcribe_audio(audio_file: str, start: float, end: float) -> Dict:
                 rprint(f"[green]📥 Using WHISPER model from HuggingFace:[/green] {model_name} ...")
 
             vad_options = {
-                "vad_onset": load_key("whisper.vad_onset", username=username),
-                "vad_offset": load_key("whisper.vad_offset", username=username)
+                "vad_onset": float(load_key("whisper.vad_onset", username=username)),
+                "vad_offset": float(load_key("whisper.vad_offset", username=username))
             }
             asr_options = {"temperatures": [0],"initial_prompt": "",}
             whisper_language = None if 'auto' in WHISPER_LANGUAGE else WHISPER_LANGUAGE

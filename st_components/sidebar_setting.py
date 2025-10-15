@@ -96,6 +96,14 @@ def page_setting():
         if burn_subtitles != load_key("burn_subtitles", username=username):
             update_key("burn_subtitles", burn_subtitles, username=username)
             st.rerun()
+
+        parakeet = st.toggle("Use Parakeet", value=load_key("parakeet", username=username), help="Use Parakeet instead of whisperx")
+        if parakeet != load_key("parakeet", username=username):
+            update_key("parakeet", parakeet, username=username)
+            st.rerun()
+
+        config_input("Parakeet API", "parakeet_url")
+
     with st.expander(t("Dubbing Settings"), expanded=True):
         tts_methods = ["azure_tts", "openai_tts", "fish_tts", "sf_fish_tts", "edge_tts", "gpt_sovits", "custom_tts", "sf_cosyvoice2"]
         select_tts = st.selectbox(t("TTS Method"), options=tts_methods, index=tts_methods.index(load_key("tts_method", username=username)))

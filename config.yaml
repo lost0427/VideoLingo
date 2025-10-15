@@ -24,6 +24,14 @@ metadata: true
 # Enable windsurf strong prompt: helps weak models keep proper nouns untranslated, may harm advanced models
 windsurf_prompt: true
 
+parakeet: true
+
+parakeet_url: "http://127.0.0.1:5005"
+
+reload_interval: 1
+
+target_len: 1200
+
 whisper:
   # ["medium", "large-v3", "large-v3-turbo"]. Note: for zh model will force to use Belle/large-v3
   model: 'large-v3'

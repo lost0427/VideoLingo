@@ -10,6 +10,8 @@ from core.all_whisper_methods.audio_preprocess import process_transcription, con
 from core.step1_ytdlp import find_video_files
 
 import streamlit as st
+import requests
+from urllib.parse import urljoin
 
 def enhance_vocals(vocals_ratio=2.50):
     username = st.session_state.get('username')
@@ -62,23 +64,53 @@ def transcribe():
     base_path = os.path.join("users", username, "output", "audio")
     WHISPER_FILE = os.path.join(base_path, "for_whisper.mp3")
 
-    whisper_audio = compress_audio(choose_audio, WHISPER_FILE)
-
-    # step3 Extract audio
-    segments = split_audio(whisper_audio)
+    whisper_audio = compress_audio(choose_audio, WHISPER_FILE)    
     
     # step4 Transcribe audio
     all_results = []
-    if load_key("whisper.runtime", username=username) == "local":
-        from core.all_whisper_methods.whisperX_local import transcribe_audio as ts
-        rprint("[cyan]🎤 Transcribing audio with local model...[/cyan]")
+    if not load_key("parakeet", username=username):
+        if load_key("whisper.runtime", username=username) == "local":
+            from core.all_whisper_methods.whisperX_local import transcribe_audio as ts
+            rprint("[cyan]🎤 Transcribing audio with local model...[/cyan]")
+        else:
+            from core.all_whisper_methods.whisperX_302 import transcribe_audio_302 as ts
+            rprint("[cyan]🎤 Transcribing audio with 302 API...[/cyan]")
+        # step3 Extract audio
+        segments = split_audio(whisper_audio)
+        for start, end in segments:
+            result = ts(whisper_audio, start, end)
+            all_results.append(result)
     else:
-        from core.all_whisper_methods.whisperX_302 import transcribe_audio_302 as ts
-        rprint("[cyan]🎤 Transcribing audio with 302 API...[/cyan]")
+        from core.all_whisper_methods.parakeet import parakeet_transcribe as para
+        # step3 Extract audio
+        target_len = int(load_key("target_len"))
 
-    for start, end in segments:
-        result = ts(whisper_audio, start, end)
-        all_results.append(result)
+        segments = split_audio(whisper_audio, target_len=target_len)
+
+        reload_interval = int(load_key("reload_interval"))
+        count = 0
+
+        parakeet_url = load_key("parakeet_url", username=username)
+        load_model_url = urljoin(parakeet_url, 'load_model')
+        unload_model_url = urljoin(parakeet_url, 'unload_model')
+
+        requests.post(load_model_url)
+
+        for start, end in segments:
+            print(whisper_audio)
+            print(start)
+            print(end)
+            result = para(whisper_audio, username, start, end)
+            all_results.append(result)
+            count += 1
+
+            if count % reload_interval == 0:
+                print(f"已完成 {count} 次转录，重新加载模型中...")
+                requests.post(unload_model_url)
+                requests.post(load_model_url)
+
+        requests.post(unload_model_url)
+
     
     # step5 Combine results
     combined_result = {'segments': []}

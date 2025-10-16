@@ -10,8 +10,6 @@ from core.all_whisper_methods.audio_preprocess import process_transcription, con
 from core.step1_ytdlp import find_video_files
 
 import streamlit as st
-import requests
-from urllib.parse import urljoin
 
 def enhance_vocals(vocals_ratio=2.50):
     username = st.session_state.get('username')
@@ -87,14 +85,7 @@ def transcribe():
 
         segments = split_audio(whisper_audio, target_len=target_len)
 
-        reload_interval = int(load_key("reload_interval"))
         count = 0
-
-        parakeet_url = load_key("parakeet_url", username=username)
-        load_model_url = urljoin(parakeet_url, 'load_model')
-        unload_model_url = urljoin(parakeet_url, 'unload_model')
-
-        requests.post(load_model_url)
 
         for start, end in segments:
             print(whisper_audio)
@@ -103,14 +94,6 @@ def transcribe():
             result = para(whisper_audio, username, start, end)
             all_results.append(result)
             count += 1
-
-            if count % reload_interval == 0:
-                print(f"已完成 {count} 次转录，重新加载模型中...")
-                requests.post(unload_model_url)
-                requests.post(load_model_url)
-
-        requests.post(unload_model_url)
-
     
     # step5 Combine results
     combined_result = {'segments': []}

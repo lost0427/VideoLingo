@@ -122,7 +122,7 @@ def parakeet_transcribe(
 if __name__ == "__main__":
     # Example usage
     whisper_audio = r""
-    segments = [(0, 100), (100, 200), (200, 300), (400, 500)]
+    segments = [(0, 300)]
     # result = parakeet_transcribe(
     #     audio_file=original_audio,
     #     username="your_username",
@@ -134,11 +134,6 @@ if __name__ == "__main__":
 
     reload_interval = 10
     count = 0
-    
-    load_model_url = "http://127.0.0.1:5005/load_model"
-    unload_model_url = "http://127.0.0.1:5005/unload_model"
-
-    requests.post(load_model_url)
 
     for start, end in segments:
         print(whisper_audio)
@@ -150,8 +145,6 @@ if __name__ == "__main__":
 
         if count % reload_interval == 0:
             print(f"已完成 {count} 次转录，重新加载模型中...")
-            requests.post(unload_model_url)
-            requests.post(load_model_url)
 
     print(all_results)
 
@@ -160,4 +153,3 @@ if __name__ == "__main__":
         combined_result['segments'].extend(result['segments'])
 
     print(combined_result)
-    requests.post(unload_model_url)

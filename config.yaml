@@ -28,8 +28,6 @@ parakeet: true
 
 parakeet_url: "http://127.0.0.1:5005"
 
-reload_interval: 1
-
 target_len: 1200
 
 whisper:

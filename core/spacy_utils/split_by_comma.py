@@ -34,21 +34,26 @@ def split_by_comma(text, nlp):
     start = 0
     
     for i, token in enumerate(doc):
-        if token.text == "," or token.text == "，":
-            suitable_for_splitting = analyze_comma(start, doc, token)
-            
-            if suitable_for_splitting :
-                sentences.append(doc[start:token.i].text.strip())
+        if token.text in [",", "，"]:
+            if analyze_comma(start, doc, token):
+                segment = doc[start:token.i].text.strip()
+                if segment:
+                    sentences.append(segment)
                 print(f"[yellow]✂️  Split at comma: {doc[start:token.i][-4:]},| {doc[token.i + 1:][:4]}[/yellow]")
                 start = token.i + 1
-    
-    for i, token in enumerate(doc):
-        if token.text == ":": # Split at colon
-            sentences.append(doc[start:token.i].text.strip())
+        
+        elif token.text == ":":
+            segment = doc[start:token.i].text.strip()
+            if segment:
+                sentences.append(segment)
             print(f"[yellow]✂️  Split at colon: {doc[start:token.i][-4:]}:| {doc[token.i + 1:][:4]}[/yellow]")
-                
+            start = token.i + 1
     
-    sentences.append(doc[start:].text.strip())
+    if start < len(doc):
+        final_segment = doc[start:].text.strip()
+        if final_segment:
+            sentences.append(final_segment)
+    
     return sentences
 
 def split_by_comma_main(nlp):

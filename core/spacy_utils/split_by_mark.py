@@ -28,9 +28,10 @@ def split_by_mark(nlp):
 
     sentences_by_mark = [sent.text for sent in doc.sents]
 
-    os.makedirs(os.path.dirname(SENTENCES_BY_MARK_PATH), exist_ok=True)
     SENTENCES_BY_MARK_PATH = os.path.join("users", username, "output", "log", "sentence_by_mark.txt")
 
+    os.makedirs(os.path.dirname(SENTENCES_BY_MARK_PATH), exist_ok=True)
+    
     with open(SENTENCES_BY_MARK_PATH, "w", encoding="utf-8") as output_file:
         for i, sentence in enumerate(sentences_by_mark):
             if i > 0 and sentence.strip() in [',', '.', '，', '。', '？', '！']:

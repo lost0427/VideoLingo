@@ -130,6 +130,7 @@ def split_for_sub_main():
 
     OUTPUT_SPLIT_FILE = os.path.join("users", username, "output", "log", "translation_results_for_subtitles.xlsx")
     OUTPUT_REMERGED_FILE = os.path.join("users", username, "output", "log", "translation_results_remerged.xlsx")
+    os.makedirs(os.path.dirname(OUTPUT_SPLIT_FILE), exist_ok=True)
     pd.DataFrame({'Source': split_src, 'Translation': split_trans}).to_excel(OUTPUT_SPLIT_FILE, index=False)
     pd.DataFrame({'Source': src, 'Translation': remerged}).to_excel(OUTPUT_REMERGED_FILE, index=False)
 

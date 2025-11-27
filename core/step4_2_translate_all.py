@@ -124,7 +124,8 @@ def translate_all():
     # apply check_len_then_trim to df_time['Translation'], only when duration > MIN_TRIM_DURATION.
     df_time['Translation'] = df_time.apply(lambda x: check_len_then_trim(x['Translation'], x['duration']) if x['duration'] > load_key("min_trim_duration", username=username) else x['Translation'], axis=1)
     console.print(df_time)
-    
+
+    os.makedirs(os.path.dirname(TRANSLATION_RESULTS_FILE), exist_ok=True)
     df_time.to_excel(TRANSLATION_RESULTS_FILE, index=False)
     console.print("[bold green]✅ Translation completed and results saved.[/bold green]")
 

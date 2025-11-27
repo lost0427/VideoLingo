@@ -71,8 +71,8 @@ def download_video_section():
                         .strftime("%Y.%m.%d %H:%M:%S")
 
                     safe_desc = description.replace("\n", "<br>")
-                    thumbnail_url_maxres = f"https://get.2sb.org/https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
-                    thumbnail_url_sd = f"https://get.2sb.org/https://i.ytimg.com/vi/{video_id}/sddefault.jpg"
+                    thumbnail_url_maxres = f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
+                    thumbnail_url_sd = f"https://i.ytimg.com/vi/{video_id}/sddefault.jpg"
                     st.markdown(
                         f"""
                         <div style="

@@ -8,9 +8,10 @@ from core.config_utils import load_key
 
 # SET PATH
 current_dir = os.path.dirname(os.path.abspath(__file__))
-os.environ['PATH'] += os.pathsep + current_dir
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
+if current_dir not in os.environ['PATH'].split(os.pathsep):
+    os.environ['PATH'] += os.pathsep + current_dir
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
 st.set_page_config(page_title="VideoLingo", page_icon="docs/logo.svg")
 
 

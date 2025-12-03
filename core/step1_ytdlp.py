@@ -39,6 +39,7 @@ def download_video_ytdlp(url, save_path='output', resolution='1080', cutoff_time
         'outtmpl': f'{save_path}/%(title)s.%(ext)s',
         'noplaylist': True,
         'writethumbnail': True,
+        'noprogress': True,
         'postprocessors': [{
             'key': 'FFmpegThumbnailsConvertor',
             'format': 'jpg',
